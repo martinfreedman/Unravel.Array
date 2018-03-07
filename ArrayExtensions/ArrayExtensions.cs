@@ -187,7 +187,7 @@ namespace Unravel.Array
         //................................... Iterators ................................................
 
 
-        internal static IEnumerable<T>CellByRowIterator<T>(this T[,] matrix, int startRow, int lengthRow, int startCol, int lengthCol)
+        internal static IEnumerable<T>CellByColIterator<T>(this T[,] matrix, int startRow, int lengthRow, int startCol, int lengthCol)
         {
             for (var j = startCol; j< startCol+ lengthCol; j++)
                 for (var i = startRow; i < startRow+ lengthRow; i++)
@@ -196,7 +196,7 @@ namespace Unravel.Array
                 }
         }
 
-        internal static IEnumerable<T> CellByColIterator<T>(this T[,] matrix, int startRow, int lengthRow, int startCol, int lengthCol)
+        internal static IEnumerable<T> CellByRowIterator<T>(this T[,] matrix, int startRow, int lengthRow, int startCol, int lengthCol)
         {
             for (var i = startRow; i < startRow + lengthRow; i++)
                 for (var j = startCol; j < startCol + lengthCol; j++)

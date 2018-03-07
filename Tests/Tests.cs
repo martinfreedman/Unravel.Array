@@ -51,7 +51,7 @@ namespace Unravel.Array
         public void EnumerateCellsExample()
         {
             var sut = _data;
-            var expected = ToFlat(ToJaggedColMajor(sut));
+            var expected = ToFlat(ToJaggedRowMajor(sut));
 
             var actual = sut.EnumerateCells();
 
@@ -63,27 +63,32 @@ namespace Unravel.Array
         [Property]
         public Property EnumerateCells(int?[,] sut)
         {
-            var expected = ToFlat(ToJaggedColMajor(sut));
+            var expected = ToFlat(ToJaggedRowMajor(sut));
 
             return (expected.SequenceEqual(sut.EnumerateCells())).ToProperty();
         }
 
-        //[Fact]
-        //public void EnumerateCellsSliceExample()
-        //{
-        //    var sut = _data;
-        //    var expected = sut[1,1];
+        [Fact]
+        public void EnumerateCellsSliceExample()
+        {
+            /*
+             *    0 1 2
+             *  0 0,1,2
+             *  1 3,4,5
+             *  2 6,7,8
+             */ 
+            var sut = _data;
+            var expected = new int[]{ 1, 2, 4, 5 };
 
-        //    var actual = sut.EnumerateCells(0,2,1,2);
+            var actual = sut.EnumerateCells(0, 2, 1, 2);
 
-        //    Assert.Single(actual);
-        //    Assert.Equal(expected, actual.First());
-        //}
+            Assert.Equal(expected,actual);
+        }
 
         [Property]
         public Property EnumerateCellsSlice(int?[,] sut)
         {
-            var expected = ToFlat(ToJaggedColMajor(sut));
+            var expected = ToFlat(ToJaggedRowMajor(sut));
 
             return (expected.SequenceEqual(sut.EnumerateCells())).ToProperty();
         }
@@ -105,7 +110,7 @@ namespace Unravel.Array
         public void TransposeCellsExample()
         {
             var sut = _data;
-            var expected = ToFlat(ToJaggedRowMajor(sut));
+            var expected = ToFlat(ToJaggedColMajor(sut));
 
             var actual = sut.TransposeCells();
 
@@ -117,7 +122,7 @@ namespace Unravel.Array
         [Property]
         public Property TransposeCells(int?[,] sut)
         {
-            var expected = ToFlat(ToJaggedRowMajor(sut));
+            var expected = ToFlat(ToJaggedColMajor(sut));
 
             return (expected.SequenceEqual(sut.TransposeCells())).ToProperty();
         }
@@ -431,19 +436,6 @@ namespace Unravel.Array
         }
 
         //............................ Helpers ...................................................
-
-        static void TestRange<T>(T[,] matrix, int axis, int start, int length, Func<T[,], int, int, dynamic> fn)
-        {
-            var ex = Record.Exception(() => fn(matrix, start, length));
-
-            if (ex != null)
-                Assert.IsType<ArgumentOutOfRangeException>(ex);
-
-            if (start < 0 || start > matrix.GetUpperBound(axis))
-                Assert.Contains("start", ex.Message);
-            else if (length < 0 || start + length > matrix.GetLength(axis))
-                Assert.Contains("length", ex.Message);
-        }
 
         static void TestRange<T>(T[,] matrix, int axis, int startRow, int lengthRow, int startCol, int lengthCol, Func<T[,], int, int, int, int, dynamic> fn)
         {
