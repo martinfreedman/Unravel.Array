@@ -57,7 +57,7 @@ namespace Unravel.Array
 
             Assert.Equal(expected.Count(), actual.Count());
             Assert.Equal(expected, actual);
-            Assert.True(expected.TrySequenceEqual(actual));
+            Assert.True(expected.SequenceEqual(actual));
         }
 
         [Theory]
@@ -71,7 +71,7 @@ namespace Unravel.Array
 
             Assert.Equal(expected.Count(), actual.Count());
             Assert.Equal(expected, actual);
-            Assert.True(expected.TrySequenceEqual(actual));
+            Assert.True(expected.SequenceEqual(actual));
         }
 
         [Property]
@@ -79,7 +79,7 @@ namespace Unravel.Array
         {
             var expected = ToFlat(ToJaggedColMajor(sut));
 
-            return (expected.TrySequenceEqual(sut.EnumerateCells())).ToProperty();
+            return (expected.SequenceEqual(sut.EnumerateCells())).ToProperty();
         }
 
         //[Fact]
@@ -99,7 +99,7 @@ namespace Unravel.Array
         {
             var expected = ToFlat(ToJaggedColMajor(sut));
 
-            return (expected.TrySequenceEqual(sut.EnumerateCells())).ToProperty();
+            return (expected.SequenceEqual(sut.EnumerateCells())).ToProperty();
         }
 
         [Fact]
@@ -125,7 +125,7 @@ namespace Unravel.Array
 
             Assert.Equal(expected.Count(), actual.Count());
             Assert.Equal(expected, actual);
-            Assert.True(expected.TrySequenceEqual(actual));
+            Assert.True(expected.SequenceEqual(actual));
         }
 
         [Property]
@@ -133,7 +133,7 @@ namespace Unravel.Array
         {
             var expected = ToFlat(ToJaggedRowMajor(sut));
 
-            return (expected.TrySequenceEqual(sut.TransposeCells())).ToProperty();
+            return (expected.SequenceEqual(sut.TransposeCells())).ToProperty();
         }
 
         [Fact]
@@ -158,7 +158,7 @@ namespace Unravel.Array
             var actual = sut.IndexedCells();
 
             Assert.Equal(expected.Count(), actual.Count());
-            Assert.True(expected.TrySequenceEqual(actual));
+            Assert.True(expected.SequenceEqual(actual));
         }
 
         [Property]
@@ -166,7 +166,7 @@ namespace Unravel.Array
         {
             var expected = ToFlat(ToJaggedColMajorIdx(sut));
 
-            return (expected.TrySequenceEqual(sut.IndexedCells())).ToProperty();
+            return (expected.SequenceEqual(sut.IndexedCells())).ToProperty();
         }
 
         [Fact]
@@ -191,7 +191,7 @@ namespace Unravel.Array
             var actual = sut.IndexedTransposeCells();
 
             Assert.Equal(expected.Count(), actual.Count());
-            Assert.True(expected.TrySequenceEqual(actual));
+            Assert.True(expected.SequenceEqual(actual));
         }
 
         [Property]
@@ -199,7 +199,7 @@ namespace Unravel.Array
         {
             var expected = ToFlat(ToJaggedRowMajorIdx(sut));
 
-            return (expected.TrySequenceEqual(sut.IndexedTransposeCells())).ToProperty();
+            return (expected.SequenceEqual(sut.IndexedTransposeCells())).ToProperty();
         }
 
         //................................. Rows .....................................
@@ -227,9 +227,9 @@ namespace Unravel.Array
 
             Assert.Equal(expected.Count(), actual.Count());
             Assert.Equal(expected, actual);
-            Assert.True(expected.First().TrySequenceEqual(actual.First()));
-            Assert.True(expected.Skip(1).First().TrySequenceEqual(actual.Skip(1).First()));
-            Assert.True(expected.Skip(2).First().TrySequenceEqual(actual.Skip(2).First()));
+            Assert.True(expected.First().SequenceEqual(actual.First()));
+            Assert.True(expected.Skip(1).First().SequenceEqual(actual.Skip(1).First()));
+            Assert.True(expected.Skip(2).First().SequenceEqual(actual.Skip(2).First()));
         }
 
         [Property]
@@ -266,9 +266,9 @@ namespace Unravel.Array
             Assert.Equal(expected.Count(), actual.Count());
             Assert.Equal(expected, actual);
             Assert.Equal(expected.FirstOrDefault(), actual.FirstOrDefault());
-            Assert.True(expected.First().TrySequenceEqual(actual.First()));
-            Assert.True(expected.Skip(1).First().TrySequenceEqual(actual.Skip(1).First()));
-            Assert.True(expected.Skip(2).First().TrySequenceEqual(actual.Skip(2).First()));
+            Assert.True(expected.First().SequenceEqual(actual.First()));
+            Assert.True(expected.Skip(1).First().SequenceEqual(actual.Skip(1).First()));
+            Assert.True(expected.Skip(2).First().SequenceEqual(actual.Skip(2).First()));
         }
 
         [Property]
@@ -304,9 +304,9 @@ namespace Unravel.Array
 
             Assert.Equal(expected.Count(), actual.Count());
             Assert.Equal(expected, actual);
-            Assert.True(expected.First().TrySequenceEqual(actual.First()));
-            Assert.True(expected.Skip(1).First().TrySequenceEqual(actual.Skip(1).First()));
-            Assert.True(expected.Skip(2).First().TrySequenceEqual(actual.Skip(2).First()));
+            Assert.True(expected.First().SequenceEqual(actual.First()));
+            Assert.True(expected.Skip(1).First().SequenceEqual(actual.Skip(1).First()));
+            Assert.True(expected.Skip(2).First().SequenceEqual(actual.Skip(2).First()));
 
             var grp = expected.Select((g,i) => (i,g.Sum(v=>v.V)));
             Assert.True(grp.SequenceEqual(actual.Select(g => (g.Key, g.Sum(c=>c.V)))));
@@ -319,7 +319,7 @@ namespace Unravel.Array
 
             var actual = ToFlat(sut.GroupedRows());
 
-            return (expected.TrySequenceEqual(actual)).ToProperty();
+            return (expected.SequenceEqual(actual)).ToProperty();
         }
 
         // .......................................... Cols .....................................
@@ -348,9 +348,9 @@ namespace Unravel.Array
             Assert.Equal(expected.Count(), actual.Count());
             Assert.Equal(expected, actual);
             Assert.Equal(expected.FirstOrDefault(), actual.FirstOrDefault());
-            Assert.True(expected.First().TrySequenceEqual(actual.First()));
-            Assert.True(expected.Skip(1).First().TrySequenceEqual(actual.Skip(1).First()));
-            Assert.True(expected.Skip(2).First().TrySequenceEqual(actual.Skip(2).First()));
+            Assert.True(expected.First().SequenceEqual(actual.First()));
+            Assert.True(expected.Skip(1).First().SequenceEqual(actual.Skip(1).First()));
+            Assert.True(expected.Skip(2).First().SequenceEqual(actual.Skip(2).First()));
         }
 
         [Property]
@@ -360,7 +360,7 @@ namespace Unravel.Array
 
             var actual = ToFlat(sut.EnumerateCols());
 
-            return (expected.TrySequenceEqual(actual)).ToProperty();
+            return (expected.SequenceEqual(actual)).ToProperty();
         }
 
         [Fact]
@@ -387,9 +387,9 @@ namespace Unravel.Array
             Assert.Equal(expected.Count(), actual.Count());
             Assert.Equal(expected, actual);
             Assert.Equal(expected.FirstOrDefault(), actual.FirstOrDefault());
-            Assert.True(expected.First().TrySequenceEqual(actual.First()));
-            Assert.True(expected.Skip(1).First().TrySequenceEqual(actual.Skip(1).First()));
-            Assert.True(expected.Skip(2).First().TrySequenceEqual(actual.Skip(2).First()));
+            Assert.True(expected.First().SequenceEqual(actual.First()));
+            Assert.True(expected.Skip(1).First().SequenceEqual(actual.Skip(1).First()));
+            Assert.True(expected.Skip(2).First().SequenceEqual(actual.Skip(2).First()));
         }
 
         [Property]
@@ -399,7 +399,7 @@ namespace Unravel.Array
 
             var actual = ToFlat(sut.IndexedCols());
 
-            return (expected.TrySequenceEqual(actual)).ToProperty();
+            return (expected.SequenceEqual(actual)).ToProperty();
         }
 
         [Fact]
@@ -426,12 +426,12 @@ namespace Unravel.Array
             Assert.Equal(expected.Count(), actual.Count());
          //   Assert.Equal(expected, actual);
           //  Assert.Equal(expected.FirstOrDefault(), actual.FirstOrDefault());
-            Assert.True(expected.First().TrySequenceEqual(actual.First()));
-            Assert.True(expected.Skip(1).First().TrySequenceEqual(actual.Skip(1).First()));
-            Assert.True(expected.Skip(2).First().TrySequenceEqual(actual.Skip(2).First()));
+            Assert.True(expected.First().SequenceEqual(actual.First()));
+            Assert.True(expected.Skip(1).First().SequenceEqual(actual.Skip(1).First()));
+            Assert.True(expected.Skip(2).First().SequenceEqual(actual.Skip(2).First()));
 
             var grp = expected.Select((g, i) => (i, g.Sum(v => v.V)));
-            Assert.True(grp.TrySequenceEqual(actual.Select(g => (g.Key, g.Sum(c => c.V)))));
+            Assert.True(grp.SequenceEqual(actual.Select(g => (g.Key, g.Sum(c => c.V)))));
         }
 
         [Property]
@@ -441,7 +441,7 @@ namespace Unravel.Array
 
             var actual = ToFlat(sut.GroupedCols());
 
-            return (expected.TrySequenceEqual(actual)).ToProperty();
+            return (expected.SequenceEqual(actual)).ToProperty();
         }
 
         //............................ Helpers ...................................................
@@ -510,41 +510,41 @@ namespace Unravel.Array
         }
     }
 
-    internal static class Helpers
-    {
-        public static bool TrySequenceEqual<T>(this IEnumerable<IEnumerable<T>> expected, IEnumerable<IEnumerable<T>> actual)
-        {
-            if (expected.Any() == actual.Any())
-            {
-                if (expected.Any())
-                {
-                    using (var eIter = expected.GetEnumerator())
-                    using (var aIter = actual.GetEnumerator())
-                    {
-                        while (eIter.MoveNext() && aIter.MoveNext())
-                        {
-                            if (!eIter.Current.SequenceEqual(eIter.Current))
-                                return false;
-                        }
-                    }
-                    return true;
-                }
-                else
-                    return true;
-            }
-            return false;
-        }
+    //internal static class Helpers
+    //{
+    //    public static bool SequenceEqual<T>(this IEnumerable<IEnumerable<T>> expected, IEnumerable<IEnumerable<T>> actual)
+    //    {
+    //        if (expected.Any() == actual.Any())
+    //        {
+    //            if (expected.Any())
+    //            {
+    //                using (var eIter = expected.GetEnumerator())
+    //                using (var aIter = actual.GetEnumerator())
+    //                {
+    //                    while (eIter.MoveNext() && aIter.MoveNext())
+    //                    {
+    //                        if (!eIter.Current.SequenceEqual(eIter.Current))
+    //                            return false;
+    //                    }
+    //                }
+    //                return true;
+    //            }
+    //            else
+    //                return true;
+    //        }
+    //        return false;
+    //    }
 
-        public static bool TrySequenceEqual<T>(this IEnumerable<T> expected, IEnumerable<T> actual)
-        {
-            if (expected.Any() == actual.Any())
-            {
-                if (expected.Any())
-                    return expected.SequenceEqual(actual);
-                else
-                    return true;
-            }
-            return false;
-        }
-    }
+    //    public static bool SequenceEqual<T>(this IEnumerable<T> expected, IEnumerable<T> actual)
+    //    {
+    //        if (expected.Any() == actual.Any())
+    //        {
+    //            if (expected.Any())
+    //                return expected.SequenceEqual(actual);
+    //            else
+    //                return true;
+    //        }
+    //        return false;
+    //    }
+    //}
 }
