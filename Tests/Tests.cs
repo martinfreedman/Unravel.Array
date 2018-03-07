@@ -131,12 +131,12 @@ namespace Unravel.Array
             return (expected.SequenceEqual(sut.TransposeCells())).ToProperty();
         }
 
-        [Property(Skip ="TODO")]
+        [Property]
         public Property TransposeCellsSlice(int?[,] sut)
         {
             var (rs, rl, cs, cl) = Slicer(sut);
 
-            var expected = ToJaggedColMajor(sut).Select(r => r.Skip(cs).Take(cl)).Skip(rs).Take(rl).SelectMany(x => x);
+            var expected = ToJaggedColMajor(sut).Select(r => r.Skip(rs).Take(rl)).Skip(cs).Take(cl).SelectMany(x => x);
 
             var actual = sut.TransposeCells(rs, rl, cs, cl);
 
@@ -209,12 +209,12 @@ namespace Unravel.Array
             return (expected.SequenceEqual(sut.IndexedTransposeCells())).ToProperty();
         }
 
-        [Property(Skip ="TODO")]
+        [Property]
         public Property IndexedTransposeCellsSlice(int?[,] sut)
         {
-            var (rs, rl, cs, cl) = SlicerTranspose(sut);
+            var (rs, rl, cs, cl) = Slicer(sut);
 
-            var expected = ToFlat(ToJaggedColMajorIdx(sut));
+            var expected = ToJaggedColMajorIdx(sut).Select(r => r.Skip(rs).Take(rl)).Skip(cs).Take(cl).SelectMany(x => x);
 
             var actual = sut.IndexedTransposeCells(rs, rl, cs, cl);
 
@@ -261,7 +261,7 @@ namespace Unravel.Array
             return (expected.SequenceEqual(actual)).ToProperty();
         }
 
-        [Property(Skip ="TODO")]
+        [Property(Skip ="")]
         public Property EnumerateRowsSlice(int?[,] sut)
         {
             var (rs, rl, cs, cl) = Slicer(sut);
