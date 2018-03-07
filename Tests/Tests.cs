@@ -88,20 +88,8 @@ namespace Unravel.Array
         [Property]
         public Property EnumerateCellsSlice(int?[,] sut)
         {
-            var rs = 0;
-            var rl = sut.GetLength(0);
-            var cs = 0;
-            var cl = sut.GetLength(1);
-            if (rl > 2)
-            {
-                rs = 1;
-                rl--;
-            }
-            if (cl > 2)
-            {
-                cs = 1;
-                cl--;
-            }
+            var (rs, rl, cs, cl) = Slicer(sut);
+
             var expected = ToJaggedRowMajor(sut).Select(r => r.Skip(cs).Take(cl)).Skip(rs).Take(rl).SelectMany(x => x);
 
             var actual = sut.EnumerateCells(rs, rl, cs, cl);
@@ -143,29 +131,17 @@ namespace Unravel.Array
             return (expected.SequenceEqual(sut.TransposeCells())).ToProperty();
         }
 
-        //[Property]
-        //public Property TransposeCellsSlice(int?[,] sut)
-        //{
-        //    var cs = 0;
-        //    var cl = sut.GetLength(0);
-        //    var rs = 0;
-        //    var rl = sut.GetLength(1);
-        //    if (rl > 2)
-        //    {
-        //        rs = 1;
-        //        rl--;
-        //    }
-        //    if (cl > 2)
-        //    {
-        //        cs = 1;
-        //        cl--;
-        //    }
-        //    var expected = ToJaggedColMajor(sut).Select(r => r.Skip(cs).Take(cl)).Skip(rs).Take(rl).SelectMany(x => x);
+        [Property(Skip ="TODO")]
+        public Property TransposeCellsSlice(int?[,] sut)
+        {
+            var (rs, rl, cs, cl) = Slicer(sut);
 
-        //    var actual = sut.TransposeCells(rs, rl, cs, cl);
+            var expected = ToJaggedColMajor(sut).Select(r => r.Skip(cs).Take(cl)).Skip(rs).Take(rl).SelectMany(x => x);
 
-        //    return (expected.SequenceEqual(actual)).ToProperty();
-        //}
+            var actual = sut.TransposeCells(rs, rl, cs, cl);
+
+            return (expected.SequenceEqual(actual)).ToProperty();
+        }
 
         [Fact]
         public void IndexedCellsDataGuards()
@@ -200,29 +176,17 @@ namespace Unravel.Array
             return (expected.SequenceEqual(sut.IndexedCells())).ToProperty();
         }
 
-        //[Property]
-        //public Property IndexedCellsSlice(int?[,] sut)
-        //{
-        //    var rs = 0;
-        //    var rl = sut.GetLength(0);
-        //    var cs = 0;
-        //    var cl = sut.GetLength(1);
-        //    if (rl > 2)
-        //    {
-        //        rs = 1;
-        //        rl--;
-        //    }
-        //    if (cl > 2)
-        //    {
-        //        cs = 1;
-        //        cl--;
-        //    }
-        //    var expected = ToJaggedRowMajor(sut).Select(r => r.Skip(cs).Take(cl)).Skip(rs).Take(rl).SelectMany(x => x);
+        [Property]
+        public Property IndexedCellsSlice(int?[,] sut)
+        {
+            var (rs, rl, cs, cl) = Slicer(sut);
 
-        //    var actual = sut.IndexedCells(rs, rl, cs, cl);
+            var expected = ToJaggedRowMajorIdx(sut).Select(r => r.Skip(cs).Take(cl)).Skip(rs).Take(rl).SelectMany(x => x);
 
-        //    return (expected.SequenceEqual(actual)).ToProperty();
-        //}
+            var actual = sut.IndexedCells(rs, rl, cs, cl);
+
+            return (expected.SequenceEqual(actual)).ToProperty();
+        }
 
         [Fact]
         public void IndexedTransposeCellsDataGuards()
@@ -237,24 +201,24 @@ namespace Unravel.Array
             TestRange(d, axis, rs, rl, cs, cl, (u, v, x, y, z) => u.IndexedTransposeCells(v, x, y, z));
         }
 
-        [Fact]
-        public void IndexedTransposeCellsExample()
-        {
-            var sut = _data;
-            var expected = ToFlat(ToJaggedColMajorIdx(sut));
-
-            var actual = sut.IndexedTransposeCells();
-
-            Assert.Equal(expected.Count(), actual.Count());
-            Assert.True(expected.SequenceEqual(actual));
-        }
-
         [Property]
         public Property IndexedTransposeCells(int?[,] sut)
         {
             var expected = ToFlat(ToJaggedColMajorIdx(sut));
 
             return (expected.SequenceEqual(sut.IndexedTransposeCells())).ToProperty();
+        }
+
+        [Property(Skip ="TODO")]
+        public Property IndexedTransposeCellsSlice(int?[,] sut)
+        {
+            var (rs, rl, cs, cl) = SlicerTranspose(sut);
+
+            var expected = ToFlat(ToJaggedColMajorIdx(sut));
+
+            var actual = sut.IndexedTransposeCells(rs, rl, cs, cl);
+
+            return (expected.SequenceEqual(actual)).ToProperty();
         }
 
         //................................. Rows .....................................
@@ -293,6 +257,18 @@ namespace Unravel.Array
             var expected = ToFlat(ToJaggedRowMajor(sut));
 
             var actual = ToFlat(sut.EnumerateRows());
+
+            return (expected.SequenceEqual(actual)).ToProperty();
+        }
+
+        [Property(Skip ="TODO")]
+        public Property EnumerateRowsSlice(int?[,] sut)
+        {
+            var (rs, rl, cs, cl) = Slicer(sut);
+
+            var expected = ToJaggedRowMajor(sut).Select(r => r.Skip(cs).Take(cl)).Skip(rs).Take(rl).SelectMany(x => x);
+
+            var actual = ToFlat(sut.EnumerateRows(rs, rl, cs, cl));
 
             return (expected.SequenceEqual(actual)).ToProperty();
         }
@@ -544,43 +520,45 @@ namespace Unravel.Array
             yield return new object[] { data, 0, 0,3, 0, 4, };
         }
 
+        public static (int,int,int,int) Slicer<T>(T[,] sut)
+        {
+            var rs = 0;
+            var rl = sut.GetLength(0);
+            var cs = 0;
+            var cl = sut.GetLength(1);
+            if (rl > 2)
+            {
+                rs = 1;
+                rl--;
+            }
+            if (cl > 2)
+            {
+                cs = 1;
+                cl--;
+            }
+
+            return (rs, rl, cs, cl);
+
+        }
+
+        public static (int, int, int, int) SlicerTranspose<T>(T[,] sut)
+        {
+            var cs = 0;
+            var cl = sut.GetLength(0);
+            var rs = 0;
+            var rl = sut.GetLength(1);
+            if (rl > 2)
+            {
+                rs = 1;
+                rl--;
+            }
+            if (cl > 2)
+            {
+                cs = 1;
+                cl--;
+            }
+
+            return (rs, rl, cs, cl);
+        }
     }
-
-    //internal static class Helpers
-    //{
-    //    public static bool SequenceEqual<T>(this IEnumerable<IEnumerable<T>> expected, IEnumerable<IEnumerable<T>> actual)
-    //    {
-    //        if (expected.Any() == actual.Any())
-    //        {
-    //            if (expected.Any())
-    //            {
-    //                using (var eIter = expected.GetEnumerator())
-    //                using (var aIter = actual.GetEnumerator())
-    //                {
-    //                    while (eIter.MoveNext() && aIter.MoveNext())
-    //                    {
-    //                        if (!eIter.Current.SequenceEqual(eIter.Current))
-    //                            return false;
-    //                    }
-    //                }
-    //                return true;
-    //            }
-    //            else
-    //                return true;
-    //        }
-    //        return false;
-    //    }
-
-    //    public static bool SequenceEqual<T>(this IEnumerable<T> expected, IEnumerable<T> actual)
-    //    {
-    //        if (expected.Any() == actual.Any())
-    //        {
-    //            if (expected.Any())
-    //                return expected.SequenceEqual(actual);
-    //            else
-    //                return true;
-    //        }
-    //        return false;
-    //    }
-    //}
 }
