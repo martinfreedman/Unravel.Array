@@ -60,20 +60,6 @@ namespace Unravel.Array
             Assert.True(expected.SequenceEqual(actual));
         }
 
-        [Theory]
-        [MemberData(nameof(EmptyData))]
-        public void EnumerateCellsEmpty(int[,]d)
-        {
-            var emptySut = d;
-            var expected = ToFlat(ToJaggedColMajor(emptySut));
-
-            var actual = d.EnumerateCells();
-
-            Assert.Equal(expected.Count(), actual.Count());
-            Assert.Equal(expected, actual);
-            Assert.True(expected.SequenceEqual(actual));
-        }
-
         [Property]
         public Property EnumerateCells(int?[,] sut)
         {
@@ -502,12 +488,6 @@ namespace Unravel.Array
             yield return new object[] { data, 0, 0,3, 0, 4, };
         }
 
-        public static IEnumerable<object[]> EmptyData()
-        {
-            yield return new object[] { new int[0, 0] };
-            yield return new object[] { new int[1, 0] };
-            yield return new object[] { new int[0, 1] };
-        }
     }
 
     //internal static class Helpers
