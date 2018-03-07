@@ -125,151 +125,96 @@ namespace Unravel.Array
 
         //.................................. Rows ......................................................
 
-        static public IEnumerable<IGrouping<int, ICell<T>>> GroupedRows<T>(this T[,] matrix, int start = 0, int length = 0)
+        static public IEnumerable<IGrouping<int, ICell<T>>> GroupedRows<T>(this T[,] matrix, int rowSkip = 0, int rowTake = 0, int colSkip = 0, int colTake = 0)
         {
             matrix.ThrowIfNull(nameof(matrix));
-            (start,length) = SetSliceOrThrow(matrix, _row, start, length);
-  
+            ((rowSkip, rowTake), (colSkip, colTake)) = matrix.SetSliceOrThrow(rowSkip, rowTake, colSkip, colTake);
+
             return _(); IEnumerable<IGrouping<int, ICell<T>>> _()
             {
-                for (var r = matrix.GetLowerBound(_row); r < matrix.GetLength(_row); r++)
+                for (var row = rowSkip; row < rowTake; row++)
                 {
-                    yield return new Grouping<int, ICell<T>> { Key = r, Values = matrix.IndexedColIterator(r, start, length) };
+                    yield return new Grouping<int, ICell<T>> { Key = row, Values = matrix.IndexedColIterator(row, colSkip, colTake) };
                 }
             }
         }
 
-        static public IEnumerable<IEnumerable<ICell<T>>> IndexedRows<T>(this T[,] matrix, int rowStart = 0, int rowLength = 0, int colStart = 0, int colLength = 0)
+        static public IEnumerable<IEnumerable<ICell<T>>> IndexedRows<T>(this T[,] matrix, int rowSkip=0, int rowTake=0, int colSkip=0, int colTake=0)
         {
             matrix.ThrowIfNull(nameof(matrix));
-            if (rowLength != 0 && colLength != 0)
-            {
-                ThrowIfOutOfRange(matrix, _col, colStart, colLength);
-                ThrowIfOutOfRange(matrix, _row, rowStart, rowLength);
-            }
-            else
-            {
-                rowStart = matrix.GetLowerBound(_row);
-                rowLength = rowStart + matrix.GetLength(_row);
-                colStart = matrix.GetLowerBound(_col);
-                colLength = colStart + matrix.GetLength(_col);
-            }
+            ((rowSkip, rowTake), (colSkip, colTake)) = matrix.SetSliceOrThrow(rowSkip,rowTake,colSkip,colTake);
 
             return _(); IEnumerable<IEnumerable<ICell<T>>> _()
             {
-                for (var r = rowStart; r < rowLength; r++)
+                for (var row = rowSkip; row < rowTake; row++)
                 {
-                    yield return matrix.IndexedColIterator(r, colStart, colLength);
+                    yield return matrix.IndexedColIterator(row, colSkip, colTake);
                 }
             }
         }
 
-        static public IEnumerable<IEnumerable<T>> EnumerateRows<T>(this T[,] matrix, int rowStart=0, int rowLength=0, int colStart=0, int colLength=0)
+        static public IEnumerable<IEnumerable<T>> EnumerateRows<T>(this T[,] matrix, int rowSkip = 0, int rowTake = 0, int colSkip = 0, int colTake = 0)
         {
             matrix.ThrowIfNull(nameof(matrix));
-            if (rowLength != 0 && colLength != 0)
-            {
-                ThrowIfOutOfRange(matrix, _col, colStart, colLength);
-                ThrowIfOutOfRange(matrix, _row, rowStart, rowLength);
-            }
-            else
-            {
-                rowStart = matrix.GetLowerBound(_row);
-                rowLength = rowStart + matrix.GetLength(_row);
-                colStart = matrix.GetLowerBound(_col);
-                colLength = colStart + matrix.GetLength(_col);
-            }
+
+            ((rowSkip, rowTake), (colSkip, colTake)) = matrix.SetSliceOrThrow(rowSkip, rowTake, colSkip, colTake);
+
 
             return _(); IEnumerable<IEnumerable<T>> _()
             {
-                for (var r =rowStart; r < rowLength; r++)
+                for (var row =rowSkip; row < rowTake; row++)
                 {
-                    yield return matrix.ColIterator(r, colStart, colLength);
+                    yield return matrix.ColIterator(row, colSkip, colTake);
                 }
             }
         }
 
         //.................................. Cols ......................................................
 
-        static public IEnumerable<IEnumerable<T>> EnumerateCols<T>(this T[,] matrix, int start = 0, int length = 0)
+        static public IEnumerable<IEnumerable<T>> EnumerateCols<T>(this T[,] matrix, int rowSkip = 0, int rowTake = 0, int colSkip = 0, int colTake = 0)
         {
             matrix.ThrowIfNull(nameof(matrix));
-            (start, length) = SetSliceOrThrow(matrix, _row, start, length);
 
+            ((rowSkip, rowTake), (colSkip, colTake)) = matrix.SetSliceOrThrow(rowSkip, rowTake, colSkip, colTake);
 
             return _(); IEnumerable<IEnumerable<T>> _()
             {
-                for (var c = matrix.GetLowerBound(_col); c <= matrix.GetUpperBound(_col); c++)
+                for (var col = colSkip; col < colTake; col++)
                 {
-                    yield return matrix.RowIterator(c, start ,length);
+                    yield return matrix.RowIterator(col, rowSkip ,rowTake);
                 }
             }
         }
 
-        static public IEnumerable<IEnumerable<ICell<T>>> IndexedCols<T>(this T[,] matrix, int start = 0, int length = 0)
+        static public IEnumerable<IEnumerable<ICell<T>>> IndexedCols<T>(this T[,] matrix, int rowSkip = 0, int rowTake = 0, int colSkip = 0, int colTake = 0)
         {
             matrix.ThrowIfNull(nameof(matrix));
-            (start, length) = SetSliceOrThrow(matrix, _col, start, length);
+
+            ((rowSkip, rowTake), (colSkip, colTake)) = matrix.SetSliceOrThrow(rowSkip, rowTake, colSkip, colTake);
 
             return _(); IEnumerable<IEnumerable<ICell<T>>> _()
             {
-                for (var c = 0; c < matrix.GetLength(_col); c++)
+                for (var col = colSkip; col < colTake; col++)
                 {
-                    yield return matrix.IndexedRowIterator(c, start, length);
+                    yield return matrix.IndexedRowIterator(col, rowSkip, rowTake);
                 }
             }
         }
 
-        static public IEnumerable<IGrouping<int,ICell<T>>> GroupedCols<T>(this T[,] matrix, int start = 0, int length = 0)
+        static public IEnumerable<IGrouping<int,ICell<T>>> GroupedCols<T>(this T[,] matrix, int rowSkip = 0, int rowTake = 0, int colSkip = 0, int colTake = 0)
         {
             matrix.ThrowIfNull(nameof(matrix));
-            (start, length) = SetSliceOrThrow(matrix, _col, start, length);
+
+            ((rowSkip, rowTake), (colSkip, colTake)) = matrix.SetSliceOrThrow(rowSkip, rowTake, colSkip, colTake);
 
             return _(); IEnumerable<IGrouping<int,ICell<T>>> _()
             {
-                for (var c = 0; c < matrix.GetLength(_col); c++)
+                for (var col = colSkip; col < colTake; col++)
                 {
-                    yield return new Grouping<int, ICell<T>> { Key = c, Values = matrix.IndexedRowIterator(c, start, length) };
+                    yield return new Grouping<int, ICell<T>> { Key = col, Values = matrix.IndexedRowIterator(col, rowSkip, rowTake) };
                 }
             }
         }
-
-        //.................................. Row .......................................................
-
-        //public static IEnumerable<T> EnumerateRow<T>(this T[,] matrix, int row, int start=0, int length=0)
-        //{
-        //    matrix.ThrowIfNull(nameof(matrix));
-        //  //  (start,length) = SetSliceOrThrow(matrix, _row, row, start, length);
-
-        //    return matrix.RowIterator(row, start, length);
-        //}
-
-        //public static IEnumerable<ICell<T>> IndexedRow<T>(this T[,] matrix, int row, int start=0, int length=0)
-        //{
-        //    matrix.ThrowIfNull(nameof(matrix));
-        //    ThrowIfOutOfRange(matrix, _row, row, start, length);
-        //    //  (start,length) = SetSliceOrThrow(matrix, _row, row, start, length);
-
-        //    return matrix.IndexedRowIterator(row, start, length);
-        //}
-
-        ////.................................. Col .......................................................
-
-        //public static IEnumerable<T> EnumerateCol<T>(this T[,] matrix, int col,int start=0, int length=0)
-        //{
-        //    matrix.ThrowIfNull(nameof(matrix));
-        //    ThrowIfOutOfRange(matrix, _col, col, start, length);
-
-        //    return matrix.ColIterator(col, start, length);
-        //}
-
-        //public static IEnumerable<ICell<T>> IndexedCol<T>(this T[,] matrix, int col,int start, int length)
-        //{
-        //    matrix.ThrowIfNull(nameof(matrix));
-        //    ThrowIfOutOfRange(matrix, _col, col, start, length);
-
-        //    return matrix.IndexedColIterator(col,start,length);
-        //}
 
         //................................... Iterators ................................................
 
@@ -366,11 +311,43 @@ namespace Unravel.Array
             ThrowIfOutOfRange(matrix, axis, start, length);
         }
 
-        internal static (int, int) SetSliceOrThrow<T>(T[,] matrix, int axis, int start, int length)
+        internal static ((int, int), (int, int)) SetSliceOrThrow<T>(this T[,] matrix, int rowSkip, int rowTake, int colSkip, int colTake)
         {
-            if (length != 0) ThrowIfOutOfRange(matrix, axis, start, length);
-            return length ==0 ? (start = matrix.GetLowerBound(axis), matrix.GetLength(axis)) :
-                                (start, length);
+            if (rowTake != 0 && colTake != 0)
+            {
+                ThrowIfOutOfRange(matrix, _col, colSkip, colTake);
+                ThrowIfOutOfRange(matrix, _row, rowSkip, rowTake);
+            }
+            else if (rowTake != 0)
+            {
+                ThrowIfOutOfRange(matrix, _row, rowSkip, rowTake);
+                (colSkip, colTake) = SetSliceColDefault(matrix);
+            }
+            else if (colTake != 0)
+            {
+                ThrowIfOutOfRange(matrix, _col, colSkip, colTake);
+                (rowSkip, rowTake) = SetSliceRowDefault(matrix);
+            }
+            else
+            {
+                ((rowSkip, rowTake), (colSkip, colTake)) = SetSliceDefault(matrix);
+            }
+
+            return ((rowSkip, rowTake), (colSkip, colTake));
+        }
+
+        internal static ((int, int), (int, int)) SetSliceDefault<T>(this T[,] m) => (m.SetSliceRowDefault(), m.SetSliceColDefault());
+        internal static (int, int) SetSliceRowDefault<T>(this T[,] m) => m.SetSliceItemDefault(_row);
+        internal static (int, int) SetSliceColDefault<T>(this T[,] m) => m.SetSliceItemDefault(_col);
+
+        internal static (int, int) SetSliceItemDefault<T>(this T[,] matrix, int item)
+        {
+            int skip, take;
+
+            skip = matrix.GetLowerBound(item);
+            take = skip + matrix.GetLength(item);
+
+            return (skip, take);
         }
     }
 
