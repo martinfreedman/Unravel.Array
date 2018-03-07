@@ -368,18 +368,22 @@ namespace Unravel.Array
             Assert.True(expected.Skip(1).First().SequenceEqual(actual.Skip(1).First()));
             Assert.True(expected.Skip(2).First().SequenceEqual(actual.Skip(2).First()));
 
-            var grp = expected.Select((g,i) => (i,g.Sum(v=>v.V)));
+            var grp = expected.Select((g, i) => (i, g.Sum(v => v.V)));
             Assert.True(grp.SequenceEqual(actual.Select(g => (g.Key, g.Sum(c=>c.V)))));
         }
 
         [Property]
         public Property GroupedRows(int[,] sut)
         {
-            var expected = ToFlat(ToJaggedRowMajorIdx(sut));
+            var unflat = ToJaggedRowMajorIdx(sut);
+            var grp = unflat.Select((g, i) => (i, g.Sum(v => v.V)));
+            var expected = ToFlat(unflat);
 
-            var actual = ToFlat(sut.GroupedRows());
+            var actual = sut.GroupedRows();
 
-            return (expected.SequenceEqual(actual)).ToProperty();
+            var res = expected.SequenceEqual(ToFlat(actual));
+            var res1= grp.SequenceEqual(actual.Select(g => (g.Key, g.Sum(c => c.V))));
+            return (res && res1).ToProperty();
         }
 
         [Property]
@@ -532,11 +536,15 @@ namespace Unravel.Array
         [Property]
         public Property GroupedCols(int[,] sut)
         {
-            var expected = ToFlat(ToJaggedColMajorIdx(sut));
+            var unflat = ToJaggedColMajorIdx(sut);
+            var grp = unflat.Select((g, i) => (i, g.Sum(v => v.V)));
+            var expected = ToFlat(unflat);
 
-            var actual = ToFlat(sut.GroupedCols());
+            var actual = sut.GroupedCols();
 
-            return (expected.SequenceEqual(actual)).ToProperty();
+            var res = expected.SequenceEqual(ToFlat(actual));
+            var res1 = grp.SequenceEqual(actual.Select(g => (g.Key, g.Sum(c => c.V))));
+            return (res && res1).ToProperty();
         }
 
         [Property]
