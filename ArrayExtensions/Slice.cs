@@ -16,15 +16,15 @@ namespace Unravel.Array
                 throw new ArgumentOutOfRangeException(_axes[axe]);
         }
 
-        internal static void ThrowIfOutOfRange<T>(T[,] matrix, int axis, int start, int length)
+        internal static void ThrowIfOutOfRange<T>(T[,] matrix, int axis, int skip, int take)
         {
             if (matrix.GetLength(axis) == 0)
                 return;
 
-            if (start < 0 || start > matrix.GetUpperBound(axis))
-                throw new ArgumentOutOfRangeException(nameof(start));
-            if (length < 1 || start + length > matrix.GetLength(axis))
-                throw new ArgumentOutOfRangeException(nameof(length));
+            if (skip < 0 || skip > matrix.GetUpperBound(axis))
+                throw new ArgumentOutOfRangeException(nameof(skip));
+            if (take < 1 || take > matrix.GetLength(axis)) 
+                throw new ArgumentOutOfRangeException(nameof(take));
         }
 
         internal static void ThrowIfOutOfRange<T>(T[,] matrix, int axis, int axe, int start, int length)
@@ -67,7 +67,7 @@ namespace Unravel.Array
             int skip, take;
 
             skip = matrix.GetLowerBound(item);
-            take = skip + matrix.GetLength(item);
+            take = matrix.GetLength(item);
 
             return (skip, take);
         }

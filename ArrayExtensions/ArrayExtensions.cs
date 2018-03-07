@@ -100,7 +100,7 @@ namespace Unravel.Array
 
             return _(); IEnumerable<IGrouping<int, ICell<T>>> _()
             {
-                for (var row = rowSkip; row < rowTake; row++)
+                for (var row = rowSkip; row < rowSkip + rowTake; row++)
                 {
                     yield return new Grouping<int, ICell<T>> { Key = row, Values = matrix.IndexedColIterator(row, colSkip, colTake) };
                 }
@@ -114,7 +114,7 @@ namespace Unravel.Array
 
             return _(); IEnumerable<IEnumerable<ICell<T>>> _()
             {
-                for (var row = rowSkip; row < rowTake; row++)
+                for (var row = rowSkip; row < rowSkip + rowTake; row++)
                 {
                     yield return matrix.IndexedColIterator(row, colSkip, colTake);
                 }
@@ -129,7 +129,7 @@ namespace Unravel.Array
 
             return _(); IEnumerable<IEnumerable<T>> _()
             {
-                for (var row =rowSkip; row < rowTake; row++)
+                for (var row =rowSkip; row < rowSkip + rowTake; row++)
                 {
                     yield return matrix.ColIterator(row, colSkip, colTake);
                 }
@@ -146,7 +146,7 @@ namespace Unravel.Array
 
             return _(); IEnumerable<IEnumerable<T>> _()
             {
-                for (var col = colSkip; col < colTake; col++)
+                for (var col = colSkip; col < colSkip + colTake; col++)
                 {
                     yield return matrix.RowIterator(col, rowSkip ,rowTake);
                 }
@@ -161,7 +161,7 @@ namespace Unravel.Array
 
             return _(); IEnumerable<IEnumerable<ICell<T>>> _()
             {
-                for (var col = colSkip; col < colTake; col++)
+                for (var col = colSkip; col < colSkip + colTake; col++)
                 {
                     yield return matrix.IndexedRowIterator(col, rowSkip, rowTake);
                 }
@@ -176,7 +176,7 @@ namespace Unravel.Array
 
             return _(); IEnumerable<IGrouping<int,ICell<T>>> _()
             {
-                for (var col = colSkip; col < colTake; col++)
+                for (var col = colSkip; col < colSkip + colTake; col++)
                 {
                     yield return new Grouping<int, ICell<T>> { Key = col, Values = matrix.IndexedRowIterator(col, rowSkip, rowTake) };
                 }
@@ -222,33 +222,33 @@ namespace Unravel.Array
                 }
         }
 
-        internal static IEnumerable<T> RowIterator<T>(this T[,] matrix, int col, int start, int length)
+        internal static IEnumerable<T> RowIterator<T>(this T[,] matrix, int col, int skip, int take)
         {
-            for (var i = start; i < start + length; i++)
+            for (var i = skip; i < skip + take; i++)
             {
                 yield return matrix[i,col];
             }
         }
 
-        internal static IEnumerable<ICell<T>> IndexedRowIterator<T>(this T[,] matrix, int col, int start, int end)
+        internal static IEnumerable<ICell<T>> IndexedRowIterator<T>(this T[,] matrix, int col, int skip, int take)
         {
-            for (var i = start; i <  end; i++)
+            for (var i = skip; i < skip+  take; i++)
             {
                 yield return new Cell<T> {V = matrix[i,col],  R = i, C= col };
             }
         }
 
-        internal static IEnumerable<T> ColIterator<T>(this T[,] matrix, int row, int start, int length)
+        internal static IEnumerable<T> ColIterator<T>(this T[,] matrix, int row, int skip, int take)
         {
-            for (var j = start; j < start + length; j++)
+            for (var j = skip; j < skip + take; j++)
             {
                 yield return matrix[row, j];
             }
         }
 
-        internal static IEnumerable<ICell<T>> IndexedColIterator<T>(this T[,] matrix, int row, int start, int end)
+        internal static IEnumerable<ICell<T>> IndexedColIterator<T>(this T[,] matrix, int row, int skip, int take)
         {
-            for (var j = start; j <end; j++)
+            for (var j = skip; j <skip + take; j++)
             {
                 yield return new Cell<T> { V = matrix[row,j], R= row, C = j} ;
             }

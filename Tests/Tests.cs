@@ -88,11 +88,11 @@ namespace Unravel.Array
         [Property]
         public Property EnumerateCellsSlice(int?[,] sut)
         {
-            var (rs, rl, cs, cl) = Slicer(sut);
+            var (rs, rt, cs, ct) = Slicer(sut);
 
-            var expected = ToJaggedRowMajor(sut).Select(r => r.Skip(cs).Take(cl)).Skip(rs).Take(rl).SelectMany(x => x);
+            var expected = ToJaggedRowMajor(sut).Select(r => r.Skip(cs).Take(ct)).Skip(rs).Take(rt).SelectMany(x => x);
 
-            var actual = sut.EnumerateCells(rs, rl, cs, cl);
+            var actual = sut.EnumerateCells(rs, rt, cs, ct);
 
             return (expected.SequenceEqual(actual)).ToProperty();
         }
@@ -261,14 +261,31 @@ namespace Unravel.Array
             return (expected.SequenceEqual(actual)).ToProperty();
         }
 
-        [Property(Skip ="")]
+        [Fact]
+        public void EnumerateRowsSliceExample()
+        {
+            /*
+             *    0 1 2
+             *  0 0,1,2
+             *  1 3,4,5
+             *  2 6,7,8
+             */
+            var sut = _data;
+            var expected = new int[] { 1, 2, 4, 5 };
+
+            var actual = sut.EnumerateRows(0, 2, 1, 2).SelectMany(x=>x);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Property]
         public Property EnumerateRowsSlice(int?[,] sut)
         {
-            var (rs, rl, cs, cl) = Slicer(sut);
+            var (rs, rt, cs, ct) = Slicer(sut);
 
-            var expected = ToJaggedRowMajor(sut).Select(r => r.Skip(cs).Take(cl)).Skip(rs).Take(rl).SelectMany(x => x);
+            var expected = ToJaggedRowMajor(sut).Select(r => r.Skip(cs).Take(ct)).Skip(rs).Take(rt).SelectMany(x => x);
 
-            var actual = ToFlat(sut.EnumerateRows(rs, rl, cs, cl));
+            var actual = ToFlat(sut.EnumerateRows(rs, rt, cs, ct));
 
             return (expected.SequenceEqual(actual)).ToProperty();
         }
@@ -308,6 +325,18 @@ namespace Unravel.Array
             var expected = ToFlat(ToJaggedRowMajorIdx(sut));
 
             var actual = ToFlat(sut.IndexedRows());
+
+            return (expected.SequenceEqual(actual)).ToProperty();
+        }
+
+        [Property]
+        public Property IndexedRowsSlice(int?[,] sut)
+        {
+            var (rs, rt, cs, ct) = Slicer(sut);
+
+            var expected = ToJaggedRowMajorIdx(sut).Select(r => r.Skip(cs).Take(ct)).Skip(rs).Take(rt).SelectMany(x => x);
+
+            var actual = ToFlat(sut.IndexedRows(rs, rt, cs, ct));
 
             return (expected.SequenceEqual(actual)).ToProperty();
         }
@@ -353,6 +382,17 @@ namespace Unravel.Array
             return (expected.SequenceEqual(actual)).ToProperty();
         }
 
+        [Property]
+        public Property GroupedRowsSlice(int?[,] sut)
+        {
+            var (rs, rt, cs, ct) = Slicer(sut);
+
+            var expected = ToJaggedRowMajorIdx(sut).Select(r => r.Skip(cs).Take(ct)).Skip(rs).Take(rt).SelectMany(x => x);
+
+            var actual = ToFlat(sut.GroupedRows(rs, rt, cs, ct));
+
+            return (expected.SequenceEqual(actual)).ToProperty();
+        }
         // .......................................... Cols .....................................
 
         [Fact]
@@ -394,6 +434,17 @@ namespace Unravel.Array
             return (expected.SequenceEqual(actual)).ToProperty();
         }
 
+        [Property]
+        public Property EnumerateColsSlice(int?[,] sut)
+        {
+            var (rs, rt, cs, ct) = Slicer(sut);
+
+            var expected = ToJaggedColMajor(sut).Select(r => r.Skip(rs).Take(rt)).Skip(cs).Take(ct).SelectMany(x => x);
+
+            var actual = ToFlat(sut.EnumerateCols(rs, rt, cs, ct));
+
+            return (expected.SequenceEqual(actual)).ToProperty();
+        }
         [Fact]
         public void IndexedColsGuards()
         {
@@ -432,6 +483,19 @@ namespace Unravel.Array
 
             return (expected.SequenceEqual(actual)).ToProperty();
         }
+
+        [Property]
+        public Property IndexedColsSlice(int?[,] sut)
+        {
+            var (rs, rt, cs, ct) = Slicer(sut);
+
+            var expected = ToJaggedColMajorIdx(sut).Select(r => r.Skip(rs).Take(rt)).Skip(cs).Take(ct).SelectMany(x => x);
+
+            var actual = ToFlat(sut.IndexedCols(rs, rt, cs, ct));
+
+            return (expected.SequenceEqual(actual)).ToProperty();
+        }
+
 
         [Fact]
         public void GroupedColsGuards()
@@ -475,21 +539,33 @@ namespace Unravel.Array
             return (expected.SequenceEqual(actual)).ToProperty();
         }
 
+        [Property]
+        public Property GroupedColsSlice(int?[,] sut)
+        {
+            var (rs, rt, cs, ct) = Slicer(sut);
+
+            var expected = ToJaggedColMajorIdx(sut).Select(r => r.Skip(rs).Take(rt)).Skip(cs).Take(ct).SelectMany(x => x);
+
+            var actual = ToFlat(sut.GroupedCols(rs, rt, cs, ct));
+
+            return (expected.SequenceEqual(actual)).ToProperty();
+        }
+
         //............................ Helpers ...................................................
 
-        static void TestRange<T>(T[,] matrix, int axis, int startRow, int lengthRow, int startCol, int lengthCol, Func<T[,], int, int, int, int, dynamic> fn)
+        static void TestRange<T>(T[,] matrix, int axis, int rowSkip, int rowTake, int colSkip, int colTake, Func<T[,], int, int, int, int, dynamic> fn)
         {
-            var ex = Record.Exception(() => fn(matrix, startRow, lengthRow, startCol, lengthCol));
+            var ex = Record.Exception(() => fn(matrix, rowSkip, rowTake, colSkip, colTake));
 
             if (ex != null)
                 Assert.IsType<ArgumentOutOfRangeException>(ex);
 
-            if ((startRow < 0 || startRow > matrix.GetUpperBound(0))
-                || startCol < 0 || startCol > matrix.GetUpperBound(1))
-                Assert.Contains("start", ex.Message);
-            else if ((lengthRow < 0 || startRow + lengthRow > matrix.GetLength(axis))
-                     || (lengthRow < 0 || startRow + lengthRow > matrix.GetLength(axis)))
-                Assert.Contains("length", ex.Message);
+            if ((rowSkip < 0 || rowSkip > matrix.GetUpperBound(0))
+                || colSkip < 0 || colSkip > matrix.GetUpperBound(1))
+                Assert.Contains("skip", ex.Message);
+            else if ((rowTake < 0 || rowSkip + rowTake > matrix.GetLength(0))
+                || (colTake < 0 || colSkip + colTake > matrix.GetLength(1)))
+                Assert.Contains("take", ex.Message);
         }
 
         static void TestMatrixGuards<T>(Func<T[,], dynamic> fun)
