@@ -10,9 +10,9 @@ namespace Unravel.Array
 {
     public interface ICell<T>
     {
-        T Val { get; }
-        int X { get; }
-        int Y { get; }
+        T V { get; }
+        int R { get; }
+        int C { get; }
     }
      
  
@@ -139,30 +139,52 @@ namespace Unravel.Array
             }
         }
 
-        static public IEnumerable<IEnumerable<ICell<T>>> IndexedRows<T>(this T[,] matrix, int start = 0, int length = 0)
+        static public IEnumerable<IEnumerable<ICell<T>>> IndexedRows<T>(this T[,] matrix, int rowStart = 0, int rowLength = 0, int colStart = 0, int colLength = 0)
         {
             matrix.ThrowIfNull(nameof(matrix));
-            (start, length) = SetSliceOrThrow(matrix, _row, start, length);
+            if (rowLength != 0 && colLength != 0)
+            {
+                ThrowIfOutOfRange(matrix, _col, colStart, colLength);
+                ThrowIfOutOfRange(matrix, _row, rowStart, rowLength);
+            }
+            else
+            {
+                rowStart = matrix.GetLowerBound(_row);
+                rowLength = rowStart + matrix.GetLength(_row);
+                colStart = matrix.GetLowerBound(_col);
+                colLength = colStart + matrix.GetLength(_col);
+            }
 
             return _(); IEnumerable<IEnumerable<ICell<T>>> _()
             {
-                for (var r = matrix.GetLowerBound(_row); r < matrix.GetLength(_row); r++)
+                for (var r = rowStart; r < rowLength; r++)
                 {
-                    yield return matrix.IndexedColIterator(r, start,length);
+                    yield return matrix.IndexedColIterator(r, colStart, colLength);
                 }
             }
         }
 
-        static public IEnumerable<IEnumerable<T>> EnumerateRows<T>(this T[,] matrix, int start =0 , int length=0 )
+        static public IEnumerable<IEnumerable<T>> EnumerateRows<T>(this T[,] matrix, int rowStart=0, int rowLength=0, int colStart=0, int colLength=0)
         {
             matrix.ThrowIfNull(nameof(matrix));
-            (start, length) = SetSliceOrThrow(matrix, _col, start, length);
+            if (rowLength != 0 && colLength != 0)
+            {
+                ThrowIfOutOfRange(matrix, _col, colStart, colLength);
+                ThrowIfOutOfRange(matrix, _row, rowStart, rowLength);
+            }
+            else
+            {
+                rowStart = matrix.GetLowerBound(_row);
+                rowLength = rowStart + matrix.GetLength(_row);
+                colStart = matrix.GetLowerBound(_col);
+                colLength = colStart + matrix.GetLength(_col);
+            }
 
             return _(); IEnumerable<IEnumerable<T>> _()
             {
-                for (var r = matrix.GetLowerBound(_row); r <= matrix.GetUpperBound(_row); r++)
+                for (var r =rowStart; r < rowLength; r++)
                 {
-                    yield return matrix.ColIterator(r, start, length);
+                    yield return matrix.ColIterator(r, colStart, colLength);
                 }
             }
         }
@@ -275,7 +297,7 @@ namespace Unravel.Array
             for (var j = startCol; j < startCol + lengthCol; j++)
                 for (var i = startRow; i < startRow + lengthRow; i++)
                 {
-                    yield return new Cell<T> { Val = matrix[i, j], Y = i, X = j } ;
+                    yield return new Cell<T> { V = matrix[i, j], C = i, R = j } ;
                 }
         }
 
@@ -284,39 +306,39 @@ namespace Unravel.Array
             for (var i = startRow; i < startRow + lengthRow; i++)
                 for (var j = startCol; j < startCol + lengthCol; j++)
                 {
-                    yield return new Cell<T> { Val = matrix[i, j], Y = i, X = j };
+                    yield return new Cell<T> { V = matrix[i, j], C = i, R = j };
                 }
         }
 
-        internal static IEnumerable<T> RowIterator<T>(this T[,] matrix, int row, int start, int length)
-        {
-            for (var j = start; j < start + length; j++)
-            {
-                yield return matrix[j,row];
-            }
-        }
-
-        internal static IEnumerable<ICell<T>> IndexedRowIterator<T>(this T[,] matrix, int row, int start, int end)
-        {
-            for (var j = start; j <  end; j++)
-            {
-                yield return new Cell<T> {Val = matrix[row, j], Y = row, X = j };
-            }
-        }
-
-        internal static IEnumerable<T> ColIterator<T>(this T[,] matrix, int col, int start, int length)
+        internal static IEnumerable<T> RowIterator<T>(this T[,] matrix, int col, int start, int length)
         {
             for (var i = start; i < start + length; i++)
             {
-                yield return matrix[col, i];
+                yield return matrix[i,col];
             }
         }
 
-        internal static IEnumerable<ICell<T>> IndexedColIterator<T>(this T[,] matrix, int col, int start, int end)
+        internal static IEnumerable<ICell<T>> IndexedRowIterator<T>(this T[,] matrix, int col, int start, int end)
         {
-            for (var i = start; i <end; i++)
+            for (var i = start; i <  end; i++)
             {
-                yield return new Cell<T> { Val = matrix[i, col], Y = i, X = col } ;
+                yield return new Cell<T> {V = matrix[i,col],  C = i, R= col };
+            }
+        }
+
+        internal static IEnumerable<T> ColIterator<T>(this T[,] matrix, int row, int start, int length)
+        {
+            for (var j = start; j < start + length; j++)
+            {
+                yield return matrix[row, j];
+            }
+        }
+
+        internal static IEnumerable<ICell<T>> IndexedColIterator<T>(this T[,] matrix, int row, int start, int end)
+        {
+            for (var j = start; j <end; j++)
+            {
+                yield return new Cell<T> { V = matrix[row,j], C= row, R = j} ;
             }
         }
 
@@ -362,11 +384,11 @@ namespace Unravel.Array
 
     internal struct Cell<T> : ICell<T>
     {
-        public T Val { get; internal set; }
+        public T V { get; internal set; }
 
-        public int X { get; internal set; }
+        public int R { get; internal set; }
 
-        public int Y { get; internal set; }
+        public int C { get; internal set; }
     }
 
     internal class Grouping<K, T> : IGrouping<K, T>
