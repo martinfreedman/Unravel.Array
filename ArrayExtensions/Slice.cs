@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
-
-[assembly: InternalsVisibleTo("Tests")]
 
 namespace Unravel.Array
 {
     internal static class Slice
     {
         static readonly string[] _axes = new string[] { "row", "col" };
-
         public const int _row = 0;
         public const int _col = 1;
+        public enum MajorAxis { ByRows, ByCols }
+
 
         internal static void ThrowIfOutOfRange<T>(T[,] matrix, int axis, int axe)
         {

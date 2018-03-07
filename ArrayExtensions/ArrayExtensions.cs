@@ -18,10 +18,7 @@ namespace Unravel.Array
  
     public static class Array
     {
-        public enum MajorAxis { ByRows, ByCols };
-
-     
-        
+      
         //.................................. Cells.. ...................................................
         public static IEnumerable<T> EnumerateCells<T>(this T[,] matrix, int rowSkip = 0, int rowTake = 0, int colSkip = 0, int colTake = 0)
         {
@@ -31,25 +28,6 @@ namespace Unravel.Array
             return matrix.IterateCells(true,rowSkip, rowTake, colSkip, colTake);
         }
 
-        //public static IEnumerable<T> EnumerateCells<T>(this T[,] matrix, int rowStart, int rowLength, int colStart, int colLength)
-        //{
-        //    matrix.ThrowIfNull(nameof(matrix));
-
-        //    return matrix.IterateCells(true, rowStart, rowLength, colStart, colLength);
-        //}
-
-        //public static IEnumerable<T> TransposeCells<T>(this T[,] matrix)
-        //{
-        //    matrix.ThrowIfNull(nameof(matrix));
-
-        //    var rowStart = matrix.GetLowerBound(0);
-        //    var rowLength = matrix.GetLength(0);
-        //    var colStart = matrix.GetLowerBound(1);
-        //    var colLength = matrix.GetLength(1);
-
-        //    return matrix.IterateCells(false, rowStart, rowLength, colStart, colLength);
-        //}
-
         public static IEnumerable<T> TransposeCells<T>(this T[,] matrix, int rowSkip = 0, int rowTake = 0, int colSkip = 0, int colTake = 0)
         {
             matrix.ThrowIfNull(nameof(matrix));
@@ -58,18 +36,6 @@ namespace Unravel.Array
 
             return matrix.IterateCells(false, rowSkip, rowTake, colSkip, colTake);
         }
-
-        //static public IEnumerable<ICell<T>> IndexedCells<T>(this T[,] matrix)
-        //{
-        //    matrix.ThrowIfNull(nameof(matrix));
-
-        //    var rowStart = matrix.GetLowerBound(0);
-        //    var rowLength = matrix.GetLength(0);
-        //    var colStart = matrix.GetLowerBound(1);
-        //    var colLength = matrix.GetLength(1);
-
-        //    return matrix.IterateIndexedCells(true, rowStart, rowLength, colStart, colLength);
-        //}
 
         public static IEnumerable<ICell<T>> IndexedCells<T>(this T[,] matrix, int rowSkip = 0, int rowTake = 0, int colSkip = 0, int colTake = 0)
         {
@@ -288,8 +254,6 @@ namespace Unravel.Array
                 yield return new Cell<T> { V = matrix[row,j], C= row, R = j} ;
             }
         }
-
-        //.................................... Helpers ..................................................
 
     }
 
