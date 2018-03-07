@@ -19,9 +19,9 @@ namespace Unravel.Array
         IEnumerable<IEnumerable<T>> ToJaggedColMajor<T>(T[,] r) => Range(0, r.GetLength(1)).Select(i => Range(0, r.GetLength(0)).Select(j => r[j, i]));
         IEnumerable<IEnumerable<T>> ToJaggedRowMajor<T>(T[,] r) => Range(0, r.GetLength(0)).Select(i => Range(0, r.GetLength(1)).Select(j => r[i, j]));
         IEnumerable<IEnumerable<ICell<T>>> ToJaggedColMajorIdx<T>(T[,] r) =>
-            Range(0, r.GetLength(1)).Select(i => Range(0, r.GetLength(0)).Select(j => new Cell<T> { V = r[j, i], C = j, R = i }).Cast<ICell<T>>());
+            Range(0, r.GetLength(1)).Select(i => Range(0, r.GetLength(0)).Select(j => new Cell<T> { V = r[j, i], R=j, C = i}).Cast<ICell<T>>());
         IEnumerable<IEnumerable<ICell<T>>> ToJaggedRowMajorIdx<T>(T[,] r) =>
-            Range(0, r.GetLength(0)).Select(i => Range(0, r.GetLength(1)).Select(j => new Cell<T> { V = r[i, j], C = i, R = j }).Cast<ICell<T>>());
+            Range(0, r.GetLength(0)).Select(i => Range(0, r.GetLength(1)).Select(j => new Cell<T> { V = r[i, j],R=i, C = j }).Cast<ICell<T>>());
 
         public Tests(ITestOutputHelper testOutputHelper)
         {

@@ -127,7 +127,6 @@ namespace Unravel.Array
 
             ((rowSkip, rowTake), (colSkip, colTake)) = matrix.SetSliceOrThrow(rowSkip, rowTake, colSkip, colTake);
 
-
             return _(); IEnumerable<IEnumerable<T>> _()
             {
                 for (var row =rowSkip; row < rowTake; row++)
@@ -210,7 +209,7 @@ namespace Unravel.Array
             for (var j = startCol; j < startCol + lengthCol; j++)
                 for (var i = startRow; i < startRow + lengthRow; i++)
                 {
-                    yield return new Cell<T> { V = matrix[i, j], C = i, R = j } ;
+                    yield return new Cell<T> { V = matrix[i, j], R = i, C = j } ;
                 }
         }
 
@@ -219,7 +218,7 @@ namespace Unravel.Array
             for (var i = startRow; i < startRow + lengthRow; i++)
                 for (var j = startCol; j < startCol + lengthCol; j++)
                 {
-                    yield return new Cell<T> { V = matrix[i, j], C = i, R = j };
+                    yield return new Cell<T> { V = matrix[i, j], R = i, C = j };
                 }
         }
 
@@ -235,7 +234,7 @@ namespace Unravel.Array
         {
             for (var i = start; i <  end; i++)
             {
-                yield return new Cell<T> {V = matrix[i,col],  C = i, R= col };
+                yield return new Cell<T> {V = matrix[i,col],  R = i, C= col };
             }
         }
 
@@ -251,7 +250,7 @@ namespace Unravel.Array
         {
             for (var j = start; j <end; j++)
             {
-                yield return new Cell<T> { V = matrix[row,j], C= row, R = j} ;
+                yield return new Cell<T> { V = matrix[row,j], R= row, C = j} ;
             }
         }
 
