@@ -18,9 +18,9 @@ namespace Unravel.Array
         IEnumerable<T> ToFlat<T>(IEnumerable<IEnumerable<T>> a) => a.SelectMany(x => x);
         IEnumerable<IEnumerable<T>> ToJaggedColMajor<T>(T[,] r) => Range(0, r.GetLength(1)).Select(i => Range(0, r.GetLength(0)).Select(j => r[j, i]));
         IEnumerable<IEnumerable<T>> ToJaggedRowMajor<T>(T[,] r) => Range(0, r.GetLength(0)).Select(i => Range(0, r.GetLength(1)).Select(j => r[i, j]));
-        IEnumerable<IEnumerable<ICell<T>>> ToJaggedRowMajorIdx<T>(T[,] r) =>
-            Range(0, r.GetLength(1)).Select(i => Range(0, r.GetLength(0)).Select(j => new Cell<T> { V = r[j, i], C = j, R = i }).Cast<ICell<T>>());
         IEnumerable<IEnumerable<ICell<T>>> ToJaggedColMajorIdx<T>(T[,] r) =>
+            Range(0, r.GetLength(1)).Select(i => Range(0, r.GetLength(0)).Select(j => new Cell<T> { V = r[j, i], C = j, R = i }).Cast<ICell<T>>());
+        IEnumerable<IEnumerable<ICell<T>>> ToJaggedRowMajorIdx<T>(T[,] r) =>
             Range(0, r.GetLength(0)).Select(i => Range(0, r.GetLength(1)).Select(j => new Cell<T> { V = r[i, j], C = i, R = j }).Cast<ICell<T>>());
 
         public Tests(ITestOutputHelper testOutputHelper)
@@ -152,7 +152,7 @@ namespace Unravel.Array
         public void IndexedCellsExample()
         {
             var sut = _data;
-            var expected = ToFlat(ToJaggedRowMajorIdx(sut));
+            var expected = ToFlat(ToJaggedColMajorIdx(sut));
 
             var actual = sut.IndexedCells();
 
@@ -163,7 +163,7 @@ namespace Unravel.Array
         [Property]
         public Property IndexedCells(int?[,] sut)
         {
-            var expected = ToFlat(ToJaggedRowMajorIdx(sut));
+            var expected = ToFlat(ToJaggedColMajorIdx(sut));
 
             return (expected.TrySequenceEqual(sut.IndexedCells())).ToProperty();
         }
@@ -185,7 +185,7 @@ namespace Unravel.Array
         public void IndexedTransposeCellsExample()
         {
             var sut = _data;
-            var expected = ToFlat(ToJaggedColMajorIdx(sut));
+            var expected = ToFlat(ToJaggedRowMajorIdx(sut));
 
             var actual = sut.IndexedTransposeCells();
 
@@ -196,7 +196,7 @@ namespace Unravel.Array
         [Property]
         public Property IndexedTransposeCells(int?[,] sut)
         {
-            var expected = ToFlat(ToJaggedColMajorIdx(sut));
+            var expected = ToFlat(ToJaggedRowMajorIdx(sut));
 
             return (expected.TrySequenceEqual(sut.IndexedTransposeCells())).ToProperty();
         }
@@ -258,7 +258,7 @@ namespace Unravel.Array
         public void IndexedRowsExample()
         {
             var sut = _data;
-            var expected = ToJaggedColMajorIdx(sut);
+            var expected = ToJaggedRowMajorIdx(sut);
 
             var actual = sut.IndexedRows();
 
@@ -273,7 +273,7 @@ namespace Unravel.Array
         [Property]
         public Property IndexedRows(int[,] sut)
         {
-            var expected = ToFlat(ToJaggedColMajorIdx(sut));
+            var expected = ToFlat(ToJaggedRowMajorIdx(sut));
 
             var actual = ToFlat(sut.IndexedRows());
 
@@ -297,7 +297,7 @@ namespace Unravel.Array
         public void GroupedRowsExample()
         {
             var sut = _data;
-            var expected = ToJaggedColMajorIdx(sut);
+            var expected = ToJaggedRowMajorIdx(sut);
 
             var actual = sut.GroupedRows();
 
@@ -314,7 +314,7 @@ namespace Unravel.Array
         [Property]
         public Property GroupedRows(int[,] sut)
         {
-            var expected = ToFlat(ToJaggedColMajorIdx(sut));
+            var expected = ToFlat(ToJaggedRowMajorIdx(sut));
 
             var actual = ToFlat(sut.GroupedRows());
 
@@ -379,7 +379,7 @@ namespace Unravel.Array
         public void IndexedColsExample()
         {
             var sut = _data;
-            var expected = ToJaggedRowMajorIdx(sut);
+            var expected = ToJaggedColMajorIdx(sut);
 
             var actual = sut.IndexedCols();
 
@@ -394,7 +394,7 @@ namespace Unravel.Array
         [Property]
         public Property IndexedCols(int[,] sut)
         {
-            var expected = ToFlat(ToJaggedRowMajorIdx(sut));
+            var expected = ToFlat(ToJaggedColMajorIdx(sut));
 
             var actual = ToFlat(sut.IndexedCols());
 
@@ -418,7 +418,7 @@ namespace Unravel.Array
         public void GroupedColsExample()
         {
             var sut = _data;
-            var expected = ToJaggedRowMajorIdx(sut);
+            var expected = ToJaggedColMajorIdx(sut);
 
             var actual = sut.GroupedCols();
 
@@ -436,7 +436,7 @@ namespace Unravel.Array
         [Property]
         public Property GroupedCols(int[,] sut)
         {
-            var expected = ToFlat(ToJaggedRowMajorIdx(sut));
+            var expected = ToFlat(ToJaggedColMajorIdx(sut));
 
             var actual = ToFlat(sut.GroupedCols());
 
