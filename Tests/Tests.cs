@@ -32,6 +32,7 @@ namespace Unravel.Array
         }
 
         private readonly ITestOutputHelper _TestOutputHelper;
+
         //..................................... Cells..........................................
         [Fact]
         public void EnumerateCellsDataGuards()
@@ -369,10 +370,10 @@ namespace Unravel.Array
         }
 
         [Theory]
-        [MemberData(nameof(Get1DRanges))]
-        public void IndexedColsRangeGuards(int?[,] d, int axis, int start, int length)
+        [MemberData(nameof(Get2DRanges))]
+        public void IndexedColsRangeGuards(int?[,] d, int axis, int rs, int rl, int cs, int cl)
         {
-            TestRange(d, axis, start, length, (x, y, z) => x.IndexedCols(y, z));
+            TestRange(d, axis, rs, rl, cs, cl, (u, v, x, y, z) => u.IndexedCols(v, x, y, z));
         }
 
         [Fact]
@@ -408,10 +409,10 @@ namespace Unravel.Array
         }
 
         [Theory]
-        [MemberData(nameof(Get1DRanges))]
-        public void GroupedColsRangeGuards(int?[,] d, int axis, int start, int length)
+        [MemberData(nameof(Get2DRanges))]
+        public void GroupedColsRangeGuards(int?[,] d, int axis, int rs, int rl, int cs, int cl)
         {
-            TestRange(d, axis, start, length, (x, y, z) => x.GroupedCols(y, z));
+            TestRange(d, axis, rs, rl, cs, cl, (u, v, x, y, z) => u.GroupedCols(v, x, y, z));
         }
 
         [Fact(Skip ="")]
@@ -484,17 +485,6 @@ namespace Unravel.Array
             Assert.IsType<ArgumentNullException>(nullEx);
             Assert.Contains("matrix", nullEx.Message);
             Assert.Null(emptyEx);
-        }
-
-        public static IEnumerable<object[]> Get1DRanges()
-        {
-            var data = new int?[3, 3] { { 0, 1, 2 }, { 3, 4, 5 }, { 6, 7, 8 } };
-
-            yield return new object[] { data, 0, 0, 3 };
-            yield return new object[] { data, 0, -1, 3 };
-            yield return new object[] { data, 0, 3, 3 };
-            yield return new object[] { data, 0, 0, -1 };
-            yield return new object[] { data, 0, 0, 4 };
         }
 
         public static IEnumerable<object[]> Get2DRanges()
