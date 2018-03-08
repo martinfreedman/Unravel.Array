@@ -21,11 +21,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
-
 [assembly: InternalsVisibleTo("Tests")]
+
 
 namespace Unravel.Array
 {
+    /// <summary>
+    /// Returns a deconstructable struct of value (V) with row (r) and column (c) indices
+    /// </summary>
     public interface ICell<T>
     {
         T V { get; }
@@ -37,8 +40,23 @@ namespace Unravel.Array
  
     public static class Array
     {
-      
+
         //.................................. Cells.. ...................................................
+
+        /// <summary>
+        /// Returns a sequence cells in the matrix
+        /// , with optional slicing in skip/take format for either rows, columns or both.
+        /// </summary>
+        /// <typeparam name="T">The type of the cells <paramref name="matrix"/></typeparam>
+        /// <param name="matrix">The regular 2D array to turn into a sequence</param>
+        /// <param name="rowSkip">How many rows to skip (0 based), leave at zero for all rows</param>
+        /// <param name="rowTake">How many rows to take after skipped rows, leave at zero for all rows </param>
+        /// <param name="colSkip">How many columns to skip (0 based), leave at zero for all columns</param>
+        /// <param name="colTake">How many columns to take after skipped columns, leave at zero for all columns</param>
+        /// <returns>Returns a sequence cells in the matrix</returns>
+        /// <remarks>This uses eager argument evaluation but deferred execution to stream its results.</remarks>
+        /// <exception cref="ArgumentOutOfRangeException">When any of the skip or take (including skip) parameters are outside the range of the matrix</exception>///
+        /// <exception cref="ArgumentNullException">When the matrix suppplied is null</exception>///
         public static IEnumerable<T> EnumerateCells<T>(this T[,] matrix, int rowSkip = 0, int rowTake = 0, int colSkip = 0, int colTake = 0)
         {
             matrix.ThrowIfNull(nameof(matrix));
@@ -47,6 +65,21 @@ namespace Unravel.Array
             return matrix.IterateCells(true,rowSkip, rowTake, colSkip, colTake);
         }
 
+        /// <summary>
+        /// Returns a a sequence of transposed cells in the matrix
+        /// , with optional slicing in skip/take format for either rows, columns or both.
+        /// Row and column skip/take parameters refer to source not transposed matrix
+        /// </summary>
+        /// <typeparam name="T">The type of the cells <paramref name="matrix"/></typeparam>
+        /// <param name="matrix">The regular 2D array to turn into a sequence</param>
+        /// <param name="rowSkip">How many rows to skip (0 based), leave at zero for all rows</param>
+        /// <param name="rowTake">How many rows to take after skipped rows, leave at zero for all rows </param>
+        /// <param name="colSkip">How many columns to skip (0 based), leave at zero for all columns</param>
+        /// <param name="colTake">How many columns to take after skipped columns, leave at zero for all columns</param>
+        /// <returns>Returns a a sequence of transposed cells in the matrix</returns>
+        /// <remarks>This uses eager argument evaluation but deferred execution to stream its results.</remarks>
+        /// <exception cref="ArgumentOutOfRangeException">When any of the skip or take (including skip) parameters are outside the range of the matrix</exception>///
+        /// <exception cref="ArgumentNullException">When the matrix suppplied is null</exception>///
         public static IEnumerable<T> TransposeCells<T>(this T[,] matrix, int rowSkip = 0, int rowTake = 0, int colSkip = 0, int colTake = 0)
         {
             matrix.ThrowIfNull(nameof(matrix));
@@ -55,6 +88,19 @@ namespace Unravel.Array
             return matrix.IterateCells(false, rowSkip, rowTake, colSkip, colTake);
         }
 
+        /// <summary>
+        /// Returns an sequence of indexed cells in the matrix
+        /// , with optional slicing in skip/take format for either rows, columns or both.
+        /// </summary>
+        /// <typeparam name="T">The type of the cells <paramref name="matrix"/></typeparam>
+        /// <param name="rowSkip">How many rows to skip (0 based), leave at zero for all rows</param>
+        /// <param name="rowTake">How many rows to take after skipped rows, leave at zero for all rows </param>
+        /// <param name="colSkip">How many columns to skip (0 based), leave at zero for all columns</param>
+        /// <param name="colTake">How many columns to take after skipped columns, leave at zero for all columns</param>
+        /// <returns>Returns an sequence of indexed cells in the matrix</returns>
+        /// <remarks>This uses eager argument evaluation but deferred execution to stream its results.</remarks>
+        /// <exception cref="ArgumentOutOfRangeException">When any of the skip or take (including skip) parameters are outside the range of the matrix</exception>///
+        /// <exception cref="ArgumentNullException">When the matrix suppplied is null</exception>///
         public static IEnumerable<ICell<T>> IndexedCells<T>(this T[,] matrix, int rowSkip = 0, int rowTake = 0, int colSkip = 0, int colTake = 0)
         {
             matrix.ThrowIfNull(nameof(matrix));
@@ -63,6 +109,21 @@ namespace Unravel.Array
             return matrix.IterateIndexedCells(true, rowSkip, rowTake, colSkip, colTake);
         }
 
+        /// <summary>
+        /// Returns a sequence of transposed indexed cells in the matrix
+        /// , with optional slicing in skip/take format for either rows, columns or both.
+        /// Row and column skip/take parameters refer to source not transposed matrix
+        /// </summary>
+        /// <typeparam name="T">The type of the cells <paramref name="matrix"/></typeparam>
+        /// <param name="matrix">The regular 2D array to turn into a sequence</param>
+        /// <param name="rowSkip">How many rows to skip (0 based), leave at zero for all rows</param>
+        /// <param name="rowTake">How many rows to take after skipped rows, leave at zero for all rows </param>
+        /// <param name="colSkip">How many columns to skip (0 based), leave at zero for all columns</param>
+        /// <param name="colTake">How many columns to take after skipped columns, leave at zero for all columns</param>
+        /// <returns>Returns a sequence of transposed indexed cells in the matrix</returns>
+        /// <remarks>This uses eager argument evaluation but deferred execution to stream its results.</remarks>
+        /// <exception cref="ArgumentOutOfRangeException">When any of the skip or take (including skip) parameters are outside the range of the matrix</exception>///
+        /// <exception cref="ArgumentNullException">When the matrix suppplied is null</exception>///
         public static IEnumerable<ICell<T>> IndexedTransposeCells<T>(this T[,] matrix, int rowSkip = 0, int rowTake = 0, int colSkip = 0, int colTake = 0)
         {
             matrix.ThrowIfNull(nameof(matrix));
@@ -87,8 +148,19 @@ namespace Unravel.Array
             IEnumerable<ICell<T>> rows() => matrix.IndexedCellByRowIterator(rowSkip, rowTake, colSkip, colTake);
         }
 
-        //.................................. Rows ......................................................
-
+        /// <summary>
+        /// Returns a sequence of row sequences, keyed by row index and with 2D indexed cells, from the matrix 
+        /// </summary>
+        /// <typeparam name="T">The type of the cells <paramref name="matrix"/></typeparam>
+        /// <param name="matrix">The regular 2D array to turn into a sequence of row sequences</param>
+        /// <param name="rowSkip">How many rows to skip (0 based), leave at zero for all rows</param>
+        /// <param name="rowTake">How many rows to take after skipped rows, leave at zero for all rows </param>
+        /// <param name="colSkip">How many columns to skip (0 based), leave at zero for all columns</param>
+        /// <param name="colTake">How many columns to take after skipped columns, leave at zero for all columns</param>
+        /// <returns>Returns a sequence of row sequences, keyed by row index and with 2D indexed cells</returns>
+        /// <remarks>This uses eager argument evaluation but deferred execution to stream its results.</remarks>
+        /// <exception cref="ArgumentOutOfRangeException">When any of the skip or take (including skip) parameters are outside the range of the matrix</exception>///
+        /// <exception cref="ArgumentNullException">When the matrix suppplied is null</exception>///
         static public IEnumerable<IGrouping<int, ICell<T>>> GroupedRows<T>(this T[,] matrix, int rowSkip = 0, int rowTake = 0, int colSkip = 0, int colTake = 0)
         {
             matrix.ThrowIfNull(nameof(matrix));
@@ -103,6 +175,20 @@ namespace Unravel.Array
             }
         }
 
+        /// <summary>
+        /// Returns a sequence of row sequences with 2D indexed cells, from the matrix 
+        /// , with optional slicing in skip/take format for either rows, columns or both.
+        /// </summary>
+        /// <typeparam name="T">The type of the cells <paramref name="matrix"/></typeparam>
+        /// <param name="matrix">The regular 2D array to turn into a sequence of row sequences</param>
+        /// <param name="rowSkip">How many rows to skip (0 based), leave at zero for all rows</param>
+        /// <param name="rowTake">How many rows to take after skipped rows, leave at zero for all rows </param>
+        /// <param name="colSkip">How many columns to skip (0 based), leave at zero for all columns</param>
+        /// <param name="colTake">How many columns to take after skipped columns, leave at zero for all columns</param>
+        /// <returns>Returns a sequence of row sequences with 2D indexed cells</returns>
+        /// <remarks>This uses eager argument evaluation but deferred execution to stream its results.</remarks>
+        /// <exception cref="ArgumentOutOfRangeException">When any of the skip or take (including skip) parameters are outside the range of the matrix</exception>///
+        /// <exception cref="ArgumentNullException">When the matrix suppplied is null</exception>///
         static public IEnumerable<IEnumerable<ICell<T>>> IndexedRows<T>(this T[,] matrix, int rowSkip=0, int rowTake=0, int colSkip=0, int colTake=0)
         {
             matrix.ThrowIfNull(nameof(matrix));
@@ -117,6 +203,20 @@ namespace Unravel.Array
             }
         }
 
+        /// <summary>
+        /// Returns a sequence of row sequences from the matrix 
+        /// , with optional slicing in skip/take format for either rows, columns or both.
+        /// </summary>
+        /// <typeparam name="T">The type of the cells <paramref name="matrix"/></typeparam>
+        /// <param name="matrix">The regular 2D array to turn into a sequence of row sequences</param>
+        /// <param name="rowSkip">How many rows to skip (0 based), leave at zero for all rows</param>
+        /// <param name="rowTake">How many rows to take after skipped rows, leave at zero for all rows </param>
+        /// <param name="colSkip">How many columns to skip (0 based), leave at zero for all columns</param>
+        /// <param name="colTake">How many columns to take after skipped columns, leave at zero for all columns</param>
+        /// <returns>Returns a sequence of row sequences </returns>
+        /// <remarks>This uses eager argument evaluation but deferred execution to stream its results.</remarks>
+        /// <exception cref="ArgumentOutOfRangeException">When any of the skip or take (including skip) parameters are outside the range of the matrix</exception>///
+        /// <exception cref="ArgumentNullException">When the matrix suppplied is null</exception>///
         static public IEnumerable<IEnumerable<T>> EnumerateRows<T>(this T[,] matrix, int rowSkip = 0, int rowTake = 0, int colSkip = 0, int colTake = 0)
         {
             matrix.ThrowIfNull(nameof(matrix));
@@ -131,8 +231,20 @@ namespace Unravel.Array
             }
         }
 
-        //.................................. Cols ......................................................
-
+        /// <summary>
+        /// Returns a sequence of column sequences from the matrix 
+        /// , with optional slicing in skip/take format for either rows, columns or both.
+        /// </summary>
+        /// <typeparam name="T">The type of the cells <paramref name="matrix"/></typeparam>
+        /// <param name="matrix">The regular 2D array to turn into a sequence of row sequences</param>
+        /// <param name="rowSkip">How many rows to skip (0 based), leave at zero for all rows</param>
+        /// <param name="rowTake">How many rows to take after skipped rows, leave at zero for all rows </param>
+        /// <param name="colSkip">How many columns to skip (0 based), leave at zero for all columns</param>
+        /// <param name="colTake">How many columns to take after skipped columns, leave at zero for all columns</param>
+        /// <returns>Returns a sequence of column sequences </returns>
+        /// <remarks>This uses eager argument evaluation but deferred execution to stream its results.</remarks>
+        /// <exception cref="ArgumentOutOfRangeException">When any of the skip or take (including skip) parameters are outside the range of the matrix</exception>///
+        /// <exception cref="ArgumentNullException">When the matrix suppplied is null</exception>///
         static public IEnumerable<IEnumerable<T>> EnumerateCols<T>(this T[,] matrix, int rowSkip = 0, int rowTake = 0, int colSkip = 0, int colTake = 0)
         {
             matrix.ThrowIfNull(nameof(matrix));
@@ -147,6 +259,20 @@ namespace Unravel.Array
             }
         }
 
+        /// <summary>
+        /// Returns a sequence of column sequences with 2D indexed cells, from the matrix 
+        /// , with optional slicing in skip/take format for either rows, columns or both.
+        /// </summary>
+        /// <typeparam name="T">The type of the cells <paramref name="matrix"/></typeparam>
+        /// <param name="matrix">The regular 2D array to turn into a sequence of row sequences</param>
+        /// <param name="rowSkip">How many rows to skip (0 based), leave at zero for all rows</param>
+        /// <param name="rowTake">How many rows to take after skipped rows, leave at zero for all rows </param>
+        /// <param name="colSkip">How many columns to skip (0 based), leave at zero for all columns</param>
+        /// <param name="colTake">How many columns to take after skipped columns, leave at zero for all columns</param>
+        /// <returns>Returns a sequence of column sequences with 2D indexed cells</returns>
+        /// <remarks>This uses eager argument evaluation but deferred execution to stream its results.</remarks>
+        /// <exception cref="ArgumentOutOfRangeException">When any of the skip or take (including skip) parameters are outside the range of the matrix</exception>///
+        /// <exception cref="ArgumentNullException">When the matrix suppplied is null</exception>///
         static public IEnumerable<IEnumerable<ICell<T>>> IndexedCols<T>(this T[,] matrix, int rowSkip = 0, int rowTake = 0, int colSkip = 0, int colTake = 0)
         {
             matrix.ThrowIfNull(nameof(matrix));
@@ -161,6 +287,20 @@ namespace Unravel.Array
             }
         }
 
+        /// <summary>
+        /// Returns a sequence of column sequences, keyed by column index and with 2D indexed cells, from the matrix 
+        /// , with optional slicing in skip/take format for either rows, columns or both.
+        /// </summary>
+        /// <typeparam name="T">The type of the cells <paramref name="matrix"/></typeparam>
+        /// <param name="matrix">The regular 2D array to turn into a sequence of row sequences</param>
+        /// <param name="rowSkip">How many rows to skip (0 based), leave at zero for all rows</param>
+        /// <param name="rowTake">How many rows to take after skipped rows, leave at zero for all rows </param>
+        /// <param name="colSkip">How many columns to skip (0 based), leave at zero for all columns</param>
+        /// <param name="colTake">How many columns to take after skipped columns, leave at zero for all columns</param>
+        /// <returns>Returns a sequence of column sequences, keyed by row index and with 2D indexed cells</returns>
+        /// <remarks>This uses eager argument evaluation but deferred execution to stream its results.</remarks>
+        /// <exception cref="ArgumentOutOfRangeException">When any of the skip or take (including skip) parameters are outside the range of the matrix</exception>///
+        /// <exception cref="ArgumentNullException">When the matrix suppplied is null</exception>///
         static public IEnumerable<IGrouping<int,ICell<T>>> GroupedCols<T>(this T[,] matrix, int rowSkip = 0, int rowTake = 0, int colSkip = 0, int colTake = 0)
         {
             matrix.ThrowIfNull(nameof(matrix));
