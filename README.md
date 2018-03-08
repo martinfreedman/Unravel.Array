@@ -17,8 +17,8 @@ First beta release
 
 ## To do ##
 
-1) Add versioning
-2) Public API comments
+1) Add versioning -Done
+2) Public API comments -Done
 3) Enhanced readme.
 4) Final Beta release
 5) Full documentation
