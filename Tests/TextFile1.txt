@@ -1,0 +1,11 @@
+﻿Test Name:	Unravel.Array.Tests.EnumerateCellsRangeGuards(d: [0, 1, 2, 3, 4, ...], axis: 0, rs: 0, rl: -1, cs: 0, cl: 3)
+Test FullName:	Unravel.Array.Tests.EnumerateCellsRangeGuards
+Test Source:	c:\src\ArrayExtensions\Tests\Tests.cs : line 46
+Test Outcome:	Failed
+Test Duration:	0:00:00.001
+
+Result StackTrace:	
+at Unravel.Array.Tests.TestRange[T](T[,] matrix, Int32 axis, Int32 rowSkip, Int32 rowTake, Int32 colSkip, Int32 colTake, Func`6 fn) in c:\src\ArrayExtensions\Tests\Tests.cs:line 576
+   at Unravel.Array.Tests.EnumerateCellsRangeGuards(Nullable`1[,] d, Int32 axis, Int32 rs, Int32 rl, Int32 cs, Int32 cl) in c:\src\ArrayExtensions\Tests\Tests.cs:line 47
+Result Message:	System.NullReferenceException : Object reference not set to an instance of an object.
+

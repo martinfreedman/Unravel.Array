@@ -4,51 +4,38 @@ namespace Unravel.Array
 {
     internal static class Slice
     {
-        static readonly string[] _axes = new string[] { "row", "col" };
         public const int _row = 0;
         public const int _col = 1;
-        public enum MajorAxis { ByRows, ByCols }
 
-
-        internal static void ThrowIfOutOfRange<T>(T[,] matrix, int axis, int axe)
-        {
-            if (axe < matrix.GetLowerBound(axis) || axe > matrix.GetUpperBound(axis))
-                throw new ArgumentOutOfRangeException(_axes[axe]);
-        }
-
-        internal static void ThrowIfOutOfRange<T>(T[,] matrix, int axis, int skip, int take)
+        internal static (int,int) ThrowIfOutOfRange<T>(T[,] matrix, int axis, int skip, int take)
         {
             if (matrix.GetLength(axis) == 0)
-                return;
+                return (0,0);
 
             if (skip < 0 || skip > matrix.GetUpperBound(axis))
                 throw new ArgumentOutOfRangeException(nameof(skip));
-            if (take < 1 || take > matrix.GetLength(axis)) 
+            if (take < 1 || take + skip > matrix.GetLength(axis)) 
                 throw new ArgumentOutOfRangeException(nameof(take));
-        }
 
-        internal static void ThrowIfOutOfRange<T>(T[,] matrix, int axis, int axe, int start, int length)
-        {
-            ThrowIfOutOfRange(matrix, axis, axe);
-            ThrowIfOutOfRange(matrix, axis, start, length);
+            return (skip, take + skip);
         }
 
         internal static ((int, int), (int, int)) SetSliceOrThrow<T>(this T[,] matrix, int rowSkip, int rowTake, int colSkip, int colTake)
         {
             if (rowTake != 0 && colTake != 0)
             {
-                ThrowIfOutOfRange(matrix, _col, colSkip, colTake);
-                ThrowIfOutOfRange(matrix, _row, rowSkip, rowTake);
+                (rowSkip, rowTake) = ThrowIfOutOfRange(matrix, _row, rowSkip, rowTake);
+                (colSkip, colTake) = ThrowIfOutOfRange(matrix, _col, colSkip, colTake);
             }
             else if (rowTake != 0)
             {
-                ThrowIfOutOfRange(matrix, _row, rowSkip, rowTake);
+                (rowSkip, rowTake) = ThrowIfOutOfRange(matrix, _row, rowSkip, rowTake);
                 (colSkip, colTake) = SetSliceColDefault(matrix);
             }
             else if (colTake != 0)
             {
-                ThrowIfOutOfRange(matrix, _col, colSkip, colTake);
                 (rowSkip, rowTake) = SetSliceRowDefault(matrix);
+                (colSkip, colTake) = ThrowIfOutOfRange(matrix, _col, colSkip, colTake);
             }
             else
             {
@@ -64,12 +51,12 @@ namespace Unravel.Array
 
         internal static (int, int) SetSliceItemDefault<T>(this T[,] matrix, int item)
         {
-            int skip, take;
+            int start, length;
 
-            skip = matrix.GetLowerBound(item);
-            take = matrix.GetLength(item);
+            start = matrix.GetLowerBound(item);
+            length = matrix.GetLength(item);
 
-            return (skip, take);
+            return (start, length);
         }
     }
 }

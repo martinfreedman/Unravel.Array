@@ -13,6 +13,7 @@ namespace Unravel.Array
         T V { get; }
         int R { get; }
         int C { get; }
+        void Deconstruct(out T v, out int r, out int c);
     }
      
  
@@ -31,7 +32,6 @@ namespace Unravel.Array
         public static IEnumerable<T> TransposeCells<T>(this T[,] matrix, int rowSkip = 0, int rowTake = 0, int colSkip = 0, int colTake = 0)
         {
             matrix.ThrowIfNull(nameof(matrix));
-
             ((rowSkip, rowTake), (colSkip, colTake)) = matrix.SetSliceOrThrow(rowSkip, rowTake, colSkip, colTake);
 
             return matrix.IterateCells(false, rowSkip, rowTake, colSkip, colTake);
@@ -40,7 +40,6 @@ namespace Unravel.Array
         public static IEnumerable<ICell<T>> IndexedCells<T>(this T[,] matrix, int rowSkip = 0, int rowTake = 0, int colSkip = 0, int colTake = 0)
         {
             matrix.ThrowIfNull(nameof(matrix));
-
             ((rowSkip, rowTake), (colSkip, colTake)) = matrix.SetSliceOrThrow(rowSkip, rowTake, colSkip, colTake);
 
             return matrix.IterateIndexedCells(true, rowSkip, rowTake, colSkip, colTake);
@@ -49,30 +48,13 @@ namespace Unravel.Array
         public static IEnumerable<ICell<T>> IndexedTransposeCells<T>(this T[,] matrix, int rowSkip = 0, int rowTake = 0, int colSkip = 0, int colTake = 0)
         {
             matrix.ThrowIfNull(nameof(matrix));
-
             ((rowSkip, rowTake), (colSkip, colTake)) = matrix.SetSliceOrThrow(rowSkip, rowTake, colSkip, colTake);
 
             return matrix.IterateIndexedCells(false, rowSkip, rowTake, colSkip, colTake);
         }
 
-        static public IEnumerable<ICell<T>> IndexedTransposeCells<T>(this T[,] matrix)
-        {
-            matrix.ThrowIfNull(nameof(matrix));
-
-            var rowStart = matrix.GetLowerBound(0);
-            var rowLength = matrix.GetLength(0);
-            var colStart = matrix.GetLowerBound(1);
-            var colLength = matrix.GetLength(1);
-
-            return matrix.IterateIndexedCells(false, rowStart, rowLength, colStart, colLength);
-        }
-
         internal static IEnumerable<T> IterateCells<T>(this T[,] matrix, bool isRowMajor, int rowSkip = 0, int rowTake = 0, int colSkip = 0, int colTake = 0)
         {
-            matrix.ThrowIfNull(nameof(matrix));
-
-            ((rowSkip, rowTake), (colSkip, colTake)) = matrix.SetSliceOrThrow(rowSkip, rowTake, colSkip, colTake);
-
             return isRowMajor ? rows() : cols();
 
             IEnumerable<T> rows() => matrix.CellByRowIterator(rowSkip, rowTake, colSkip, colTake);
@@ -81,10 +63,6 @@ namespace Unravel.Array
 
         static internal IEnumerable<ICell<T>> IterateIndexedCells<T>(this T[,] matrix, bool isRowMajor, int rowSkip = 0, int rowTake = 0, int colSkip = 0, int colTake = 0)
         {
-            matrix.ThrowIfNull(nameof(matrix));
-
-            ((rowSkip, rowTake), (colSkip, colTake)) = matrix.SetSliceOrThrow(rowSkip, rowTake, colSkip, colTake);
-
             return isRowMajor ? rows() : cols();
 
             IEnumerable<ICell<T>> cols() => matrix.IndexedCellByColIterator(rowSkip, rowTake, colSkip, colTake);
@@ -100,7 +78,7 @@ namespace Unravel.Array
 
             return _(); IEnumerable<IGrouping<int, ICell<T>>> _()
             {
-                for (var row = rowSkip; row < rowSkip + rowTake; row++)
+                for (var row = rowSkip; row < rowTake; row++)
                 {
                     yield return new Grouping<int, ICell<T>> { Key = row, Values = matrix.IndexedColIterator(row, colSkip, colTake) };
                 }
@@ -114,7 +92,7 @@ namespace Unravel.Array
 
             return _(); IEnumerable<IEnumerable<ICell<T>>> _()
             {
-                for (var row = rowSkip; row < rowSkip + rowTake; row++)
+                for (var row = rowSkip; row < rowTake; row++)
                 {
                     yield return matrix.IndexedColIterator(row, colSkip, colTake);
                 }
@@ -124,12 +102,11 @@ namespace Unravel.Array
         static public IEnumerable<IEnumerable<T>> EnumerateRows<T>(this T[,] matrix, int rowSkip = 0, int rowTake = 0, int colSkip = 0, int colTake = 0)
         {
             matrix.ThrowIfNull(nameof(matrix));
-
             ((rowSkip, rowTake), (colSkip, colTake)) = matrix.SetSliceOrThrow(rowSkip, rowTake, colSkip, colTake);
 
             return _(); IEnumerable<IEnumerable<T>> _()
             {
-                for (var row =rowSkip; row < rowSkip + rowTake; row++)
+                for (var row =rowSkip; row <  rowTake; row++)
                 {
                     yield return matrix.ColIterator(row, colSkip, colTake);
                 }
@@ -141,12 +118,11 @@ namespace Unravel.Array
         static public IEnumerable<IEnumerable<T>> EnumerateCols<T>(this T[,] matrix, int rowSkip = 0, int rowTake = 0, int colSkip = 0, int colTake = 0)
         {
             matrix.ThrowIfNull(nameof(matrix));
-
             ((rowSkip, rowTake), (colSkip, colTake)) = matrix.SetSliceOrThrow(rowSkip, rowTake, colSkip, colTake);
 
             return _(); IEnumerable<IEnumerable<T>> _()
             {
-                for (var col = colSkip; col < colSkip + colTake; col++)
+                for (var col = colSkip; col <  colTake; col++)
                 {
                     yield return matrix.RowIterator(col, rowSkip ,rowTake);
                 }
@@ -156,12 +132,11 @@ namespace Unravel.Array
         static public IEnumerable<IEnumerable<ICell<T>>> IndexedCols<T>(this T[,] matrix, int rowSkip = 0, int rowTake = 0, int colSkip = 0, int colTake = 0)
         {
             matrix.ThrowIfNull(nameof(matrix));
-
             ((rowSkip, rowTake), (colSkip, colTake)) = matrix.SetSliceOrThrow(rowSkip, rowTake, colSkip, colTake);
 
             return _(); IEnumerable<IEnumerable<ICell<T>>> _()
             {
-                for (var col = colSkip; col < colSkip + colTake; col++)
+                for (var col = colSkip; col <  colTake; col++)
                 {
                     yield return matrix.IndexedRowIterator(col, rowSkip, rowTake);
                 }
@@ -171,12 +146,11 @@ namespace Unravel.Array
         static public IEnumerable<IGrouping<int,ICell<T>>> GroupedCols<T>(this T[,] matrix, int rowSkip = 0, int rowTake = 0, int colSkip = 0, int colTake = 0)
         {
             matrix.ThrowIfNull(nameof(matrix));
-
             ((rowSkip, rowTake), (colSkip, colTake)) = matrix.SetSliceOrThrow(rowSkip, rowTake, colSkip, colTake);
 
             return _(); IEnumerable<IGrouping<int,ICell<T>>> _()
             {
-                for (var col = colSkip; col < colSkip + colTake; col++)
+                for (var col = colSkip; col <  colTake; col++)
                 {
                     yield return new Grouping<int, ICell<T>> { Key = col, Values = matrix.IndexedRowIterator(col, rowSkip, rowTake) };
                 }
@@ -185,73 +159,56 @@ namespace Unravel.Array
 
         //................................... Iterators ................................................
 
-
         internal static IEnumerable<T>CellByColIterator<T>(this T[,] matrix, int startRow, int lengthRow, int startCol, int lengthCol)
         {
-            for (var j = startCol; j< startCol+ lengthCol; j++)
-                for (var i = startRow; i < startRow+ lengthRow; i++)
-                {
+            for (var j = startCol; j<  lengthCol; j++)
+                for (var i = startRow; i <  lengthRow; i++)
                     yield return matrix[i, j];
-                }
         }
 
         internal static IEnumerable<T> CellByRowIterator<T>(this T[,] matrix, int startRow, int lengthRow, int startCol, int lengthCol)
         {
-            for (var i = startRow; i < startRow + lengthRow; i++)
-                for (var j = startCol; j < startCol + lengthCol; j++)
-                {
+            for (var i = startRow; i <  lengthRow; i++)
+                for (var j = startCol; j <  lengthCol; j++)
                     yield return matrix[i, j];
-                }
         }
 
         internal static IEnumerable<ICell<T>> IndexedCellByColIterator<T>(this T[,] matrix, int startRow, int lengthRow, int startCol, int lengthCol)
         {
-            for (var j = startCol; j < startCol + lengthCol; j++)
-                for (var i = startRow; i < startRow + lengthRow; i++)
-                {
+            for (var j = startCol; j <  lengthCol; j++)
+                for (var i = startRow; i <  lengthRow; i++)
                     yield return new Cell<T> { V = matrix[i, j], R = i, C = j } ;
-                }
         }
 
         internal static IEnumerable<ICell<T>> IndexedCellByRowIterator<T>(this T[,] matrix, int startRow, int lengthRow, int startCol, int lengthCol)
         {
-            for (var i = startRow; i < startRow + lengthRow; i++)
-                for (var j = startCol; j < startCol + lengthCol; j++)
-                {
+            for (var i = startRow; i <  lengthRow; i++)
+                for (var j = startCol; j <  lengthCol; j++)
                     yield return new Cell<T> { V = matrix[i, j], R = i, C = j };
-                }
         }
 
         internal static IEnumerable<T> RowIterator<T>(this T[,] matrix, int col, int skip, int take)
         {
-            for (var i = skip; i < skip + take; i++)
-            {
+            for (var i = skip; i < take; i++)
                 yield return matrix[i,col];
-            }
         }
 
         internal static IEnumerable<ICell<T>> IndexedRowIterator<T>(this T[,] matrix, int col, int skip, int take)
         {
-            for (var i = skip; i < skip+  take; i++)
-            {
+            for (var i = skip; i < take; i++)
                 yield return new Cell<T> {V = matrix[i,col],  R = i, C= col };
-            }
         }
 
         internal static IEnumerable<T> ColIterator<T>(this T[,] matrix, int row, int skip, int take)
         {
-            for (var j = skip; j < skip + take; j++)
-            {
+            for (var j = skip; j < take; j++)
                 yield return matrix[row, j];
-            }
         }
 
         internal static IEnumerable<ICell<T>> IndexedColIterator<T>(this T[,] matrix, int row, int skip, int take)
         {
-            for (var j = skip; j <skip + take; j++)
-            {
+            for (var j = skip; j < take; j++)
                 yield return new Cell<T> { V = matrix[row,j], R= row, C = j} ;
-            }
         }
 
     }
@@ -271,6 +228,13 @@ namespace Unravel.Array
         public int R { get; internal set; }
 
         public int C { get; internal set; }
+
+        public void Deconstruct(out T v, out int r, out int c)
+        {
+            v = V;
+            r = R;
+            c = C;
+        }
     }
 
     internal class Grouping<K, T> : IGrouping<K, T>

@@ -571,8 +571,8 @@ namespace Unravel.Array
             if ((rowSkip < 0 || rowSkip > matrix.GetUpperBound(0))
                 || colSkip < 0 || colSkip > matrix.GetUpperBound(1))
                 Assert.Contains("skip", ex.Message);
-            else if ((rowTake < 0 || rowSkip + rowTake > matrix.GetLength(0))
-                || (colTake < 0 || colSkip + colTake > matrix.GetLength(1)))
+            else if ((rowTake < 0 || rowTake > matrix.GetLength(0))
+                || (colTake < 0 || colTake > matrix.GetLength(1)))
                 Assert.Contains("take", ex.Message);
         }
 
@@ -595,7 +595,7 @@ namespace Unravel.Array
 
             yield return new object[] { data, 0, 0, 3, 0 ,3 };
             yield return new object[] { data, 0, -1, 3, 0, 3 };
-            yield return new object[] { data, 0, 3, 3,0 ,3 };
+            yield return new object[] { data, 0, 3, 3, 0 ,3 };
             yield return new object[] { data, 0, 0, -1, 0 ,3 };
             yield return new object[] { data, 0, 0, 4, 0 , 3 };
             yield return new object[] { data, 0, 0, 3, -1, 3, };
