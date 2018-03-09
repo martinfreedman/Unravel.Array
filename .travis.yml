@@ -3,11 +3,11 @@ solution: ArrayExtensions.sln
 mono: none
 dotnet: 1.1.5
 install:
+  - nuget restore ArrayExtensions.sln
   - nuget install xunit.runner.console -Version 2.3.1 -OutputDirectory testrunner
   - nuget install FsCheck -Version 2.10.8 -OutputDirectory testrunner
   - nuget install FsCheck.Xunit -Version 2.10.8 -OutputDirectory testrunner
-  - nuget restore ArrayExtensions.sln
-   script:
+ script:
   - xbuild /p:Configuration=Release ArrayExtensions.sln
   - mono ./testrunner/xunit.runner.console.*/tools/xunit.console.exe ./Tests/bin/Release/ArrayExtensions.Tests.dll
   
