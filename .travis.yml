@@ -4,6 +4,7 @@ install:
   - nuget restore ArrayExtensions.sln
   - nuget install xunit.runner.console --OutputDirectory testrunner
   - nuget install FsCheck -OutputDirectory testrunner
+  - nuget install FsCheck.Xunit -OutputDirectory testrunner
    script:
   - xbuild /p:Configuration=Release ArrayExtensions.sln
   - mono ./packages/xunit.runner.console.*/tools/xunit.console.exe ./Tests/bin/Release/ArrayExtensions.Tests.dll
