@@ -180,9 +180,13 @@ namespace Unravel.Array
             var expected = ToFlat(ToJaggedRowMajorIdx(sut));
 
             var actual = sut.IndexedCells();
+            var (v, r, c) = actual.Skip(1).First();
 
             Assert.Equal(expected.Count(), actual.Count());
             Assert.True(expected.SequenceEqual(actual));
+            Assert.Equal(1,v);
+            Assert.Equal(0,r);
+            Assert.Equal(1,c);
         }
 
         [Property]
