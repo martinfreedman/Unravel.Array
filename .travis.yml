@@ -1,5 +1,7 @@
 language: csharp
 solution: ArrayExtensions.sln
+mono: none
+dotnet: 1.1.5
 install:
   - nuget install xunit.runner.console -Version 2.3.1 -OutputDirectory testrunner
   - nuget install FsCheck -Version 2.10.8 -OutputDirectory testrunner
