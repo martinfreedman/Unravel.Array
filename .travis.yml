@@ -3,6 +3,7 @@ solution: ArrayExtensions.sln
 install:
   - nuget restore ArrayExtensions.sln
   - nuget install xunit.runners -OutputDirectory testrunner
+  - nuget install fscheck.xunit -OutputDirectory testrunner
    script:
   - xbuild /p:Configuration=Release ArrayExtensions.sln
   - mono ./packages/xunit.runners.*/tools/xunit.console.clr4.exe ./Tests/bin/Release/ArrayExtensions.Tests.dll
